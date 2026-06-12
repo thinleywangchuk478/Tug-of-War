@@ -490,13 +490,30 @@ function showWin(team){
   stopBgMusic();
   playWinFanfare();
 
-  ['char-l','char-r'].forEach(id=>{
-    const c=document.getElementById(id);
-    c.classList.add('celebrate');
-    setTimeout(()=>c.classList.remove('celebrate'),1800);
-  });
+  clearCharStates();
 
-  const ov=document.getElementById('win-overlay');
+  const teamA = document.getElementById('team-a-players');
+  const teamB = document.getElementById('team-b-players');
+
+  if(team === 'end'){
+    const w = scores[0] > scores[1] ? 0 : scores[0] < scores[1] ? 1 : 'draw';
+    if(w === 'draw'){
+      teamA.classList.add('celebrating');
+      teamB.classList.add('celebrating');
+    } else {
+      const winner = w === 0 ? teamA : teamB;
+      const loser  = w === 0 ? teamB : teamA;
+      winner.classList.add('celebrating');
+      loser.classList.add('sad');
+    }
+  } else {
+    const winner = team === 0 ? teamA : teamB;
+    const loser  = team === 0 ? teamB : teamA;
+    winner.classList.add('celebrating');
+    loser.classList.add('sad');
+  }
+
+  const ov = document.getElementById('win-overlay');
   setTimeout(()=>{
     ov.style.display='flex';
     if(team==='end'){
