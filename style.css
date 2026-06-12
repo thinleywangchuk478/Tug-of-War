@@ -175,31 +175,247 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 .btn-sm:hover{background:var(--btn-sm-hover);}
 
 /* ── TUG ARENA ── */
-.arena{position:relative;height:175px;border-radius:18px;background:var(--arena-bg);border:1px solid var(--arena-border);overflow:hidden;margin-bottom:.5rem;}
-.arena-ground{position:absolute;bottom:26px;left:0;right:0;height:4px;background:var(--ground-bg);}
-.rope-track{position:absolute;bottom:50px;left:100px;right:100px;height:16px;display:flex;align-items:center;}
-.rope-track svg{width:100%;height:16px;overflow:visible;}
-.rope-flag{position:absolute;bottom:44px;transform:translateX(-50%);transition:left .7s cubic-bezier(.34,1.56,.64,1);z-index:10;display:flex;flex-direction:column;align-items:center;}
-.rope-pole{width:3px;height:26px;background:linear-gradient(#fff,#ccc);border-radius:2px;}
-.rope-cloth{position:absolute;top:0;left:3px;width:18px;height:12px;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%);background:var(--orange);border-radius:0 3px 3px 0;}
+.arena{
+  position:relative;
+  height:210px;
+  border-radius:18px;
+  background:var(--arena-bg);
+  border:1px solid var(--arena-border);
+  overflow:hidden;
+  margin-bottom:.5rem;
+}
+.arena-ground{
+  position:absolute;
+  bottom:28px;left:0;right:0;
+  height:4px;
+  background:var(--ground-bg);
+}
+.rope-svg{
+  position:absolute;
+  bottom:70px;
+  left:0; right:0;
+  width:100%;
+  height:12px;
+  z-index:5;
+}
+.rope-flag{
+  position:absolute;
+  bottom:62px;
+  transform:translateX(-50%);
+  transition:left .7s cubic-bezier(.34,1.56,.64,1);
+  z-index:20;
+  display:flex;flex-direction:column;align-items:center;
+}
+.rope-pole{width:3px;height:30px;background:linear-gradient(#fff,#ccc);border-radius:2px;}
+.rope-cloth{
+  position:absolute;top:0;left:3px;
+  width:20px;height:14px;
+  clip-path:polygon(0 0,100% 20%,100% 80%,0 100%);
+  background:var(--orange);
+  border-radius:0 3px 3px 0;
+}
 .win-zone{position:absolute;top:0;bottom:0;width:80px;pointer-events:none;}
 .win-zone.l{left:0;background:linear-gradient(90deg,rgba(59,139,235,.3),transparent);border-radius:18px 0 0 18px;}
 .win-zone.r{right:0;background:linear-gradient(270deg,rgba(231,76,60,.3),transparent);border-radius:0 18px 18px 0;}
-.char{position:absolute;bottom:24px;width:110px;height:135px;}
-.char.cl{left:2px;}
-.char.cr{right:2px;transform:scaleX(-1);}
-@keyframes pullL{0%,100%{transform:translateX(0)}50%{transform:translateX(-8px)}}
-@keyframes pullR{0%,100%{transform:scaleX(-1) translateX(0)}50%{transform:scaleX(-1) translateX(-8px)}}
-@keyframes shakeL{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-@keyframes shakeR{0%,100%{transform:scaleX(-1)}25%{transform:scaleX(-1) translateX(-5px)}75%{transform:scaleX(-1) translateX(5px)}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.char.cl.pull{animation:pullL .5s ease-in-out 3;}
-.char.cr.pull{animation:pullR .5s ease-in-out 3;}
-.char.cl.shk{animation:shakeL .3s ease 2;}
-.char.cr.shk{animation:shakeR .3s ease 2;}
-.char.cl.celebrate{animation:bounce .4s ease 4;}
-.char.cr.celebrate{animation:bounce .4s ease 4;}
 
+/* ── TEAM PLAYER GROUPS ── */
+.team-players{
+  position:absolute;
+  bottom:28px;
+  display:flex;
+  align-items:flex-end;
+  gap:4px;
+  z-index:10;
+}
+.team-players.left{
+  left:4px;
+  flex-direction:row;
+  transition: transform .65s cubic-bezier(.34,1.2,.64,1);
+}
+.team-players.right{
+  right:4px;
+  flex-direction:row-reverse;
+  transform:scaleX(-1);
+  transition: transform .65s cubic-bezier(.34,1.2,.64,1);
+}
+
+.player-wrap{
+  width:80px;
+  height:130px;
+  flex-shrink:0;
+}
+.player-svg{ width:100%; height:100%; overflow:visible; }
+
+/* ══════════════════════════════════════
+   PLAYER ANIMATIONS
+══════════════════════════════════════ */
+
+/* ── IDLE: gentle lean-back pull stance with leg walk cycle ── */
+@keyframes idle-lean{
+  0%,100%{ transform:rotate(-12deg) translateY(0); }
+  50%    { transform:rotate(-14deg) translateY(-2px); }
+}
+@keyframes idle-leg-b{
+  0%,100%{ transform:rotate(-8deg); }
+  50%    { transform:rotate(14deg); }
+}
+@keyframes idle-leg-f{
+  0%,100%{ transform:rotate(14deg); }
+  50%    { transform:rotate(-8deg); }
+}
+@keyframes idle-arm-b{
+  0%,100%{ transform:rotate(20deg); }
+  50%    { transform:rotate(30deg); }
+}
+@keyframes idle-arm-f{
+  0%,100%{ transform:rotate(-10deg); }
+  50%    { transform:rotate(-20deg); }
+}
+@keyframes idle-head{
+  0%,100%{ transform:rotate(8deg); }
+  50%    { transform:rotate(6deg); }
+}
+
+/* apply idle to all players by default */
+.player-wrap .p-body  { transform-origin:40px 65px; animation:idle-lean  1.1s ease-in-out infinite; }
+.player-wrap .p-head  { transform-origin:40px 36px; animation:idle-head  1.1s ease-in-out infinite; }
+.player-wrap .p-leg-b { transform-origin:36px 82px; animation:idle-leg-b 1.1s ease-in-out infinite; }
+.player-wrap .p-leg-f { transform-origin:49px 82px; animation:idle-leg-f 1.1s ease-in-out infinite; }
+.player-wrap .p-arm-b { transform-origin:59px 52px; animation:idle-arm-b 1.1s ease-in-out infinite; }
+.player-wrap .p-arm-f { transform-origin:21px 52px; animation:idle-arm-f 1.1s ease-in-out infinite; }
+
+/* stagger p2 so the two players look independent */
+#pa2 .p-body, #pa2 .p-head,
+#pa2 .p-leg-b, #pa2 .p-leg-f,
+#pa2 .p-arm-b, #pa2 .p-arm-f { animation-delay:.55s; }
+
+#pb2 .p-body, #pb2 .p-head,
+#pb2 .p-leg-b, #pb2 .p-leg-f,
+#pb2 .p-arm-b, #pb2 .p-arm-f { animation-delay:.55s; }
+
+/* ── PULL: hard lean, arms wrench, legs dig in ── */
+@keyframes pull-lean{
+  0%      { transform:rotate(-12deg); }
+  25%     { transform:rotate(-26deg) translateX(8px); }
+  60%     { transform:rotate(-28deg) translateX(10px); }
+  80%     { transform:rotate(-20deg) translateX(4px); }
+  100%    { transform:rotate(-12deg); }
+}
+@keyframes pull-leg-b{
+  0%,100% { transform:rotate(-8deg); }
+  40%     { transform:rotate(-22deg); }
+}
+@keyframes pull-leg-f{
+  0%,100% { transform:rotate(14deg); }
+  40%     { transform:rotate(26deg); }
+}
+@keyframes pull-arm-b{
+  0%,100% { transform:rotate(20deg); }
+  35%     { transform:rotate(50deg); }
+}
+@keyframes pull-arm-f{
+  0%,100% { transform:rotate(-10deg); }
+  35%     { transform:rotate(-35deg); }
+}
+@keyframes pull-head{
+  0%,100% { transform:rotate(8deg); }
+  40%     { transform:rotate(18deg); }
+}
+@keyframes sweat-pop{
+  0%,55%  { opacity:0; transform:scale(0) translateY(0); }
+  70%     { opacity:1; transform:scale(1.3) translateY(-3px); }
+  100%    { opacity:0; transform:scale(.8) translateY(-8px); }
+}
+
+.team-players.pulling .p-body  { animation:pull-lean  .55s ease-in-out 3 !important; }
+.team-players.pulling .p-head  { animation:pull-head  .55s ease-in-out 3 !important; }
+.team-players.pulling .p-leg-b { animation:pull-leg-b .55s ease-in-out 3 !important; }
+.team-players.pulling .p-leg-f { animation:pull-leg-f .55s ease-in-out 3 !important; }
+.team-players.pulling .p-arm-b { animation:pull-arm-b .55s ease-in-out 3 !important; }
+.team-players.pulling .p-arm-f { animation:pull-arm-f .55s ease-in-out 3 !important; }
+.team-players.pulling .p-sweat { animation:sweat-pop  .55s ease-in-out 3 !important; }
+#pa2.player-wrap .p-body,
+#pb2.player-wrap .p-body { /* keep stagger during pull too */ }
+
+/* ── WRONG: shake and stumble forward ── */
+@keyframes wrong-lean{
+  0%      { transform:rotate(-12deg); }
+  20%     { transform:rotate(4deg) translateX(8px); }
+  40%     { transform:rotate(-8deg) translateX(-4px); }
+  60%     { transform:rotate(2deg) translateX(6px); }
+  80%     { transform:rotate(-5deg) translateX(-2px); }
+  100%    { transform:rotate(-12deg); }
+}
+@keyframes wrong-head{
+  0%,100% { transform:rotate(8deg); }
+  30%     { transform:rotate(-10deg); }
+  70%     { transform:rotate(14deg); }
+}
+.team-players.wrong .p-body { animation:wrong-lean .5s ease 2 !important; }
+.team-players.wrong .p-head { animation:wrong-head .5s ease 2 !important; }
+
+/* ── CELEBRATE: jump up, arms raised ── */
+@keyframes cel-jump{
+  0%      { transform:translateY(0); }
+  25%     { transform:translateY(-30px); }
+  45%     { transform:translateY(-34px); }
+  65%     { transform:translateY(-14px); }
+  80%     { transform:translateY(-28px); }
+  100%    { transform:translateY(0); }
+}
+@keyframes cel-body{
+  0%,100% { transform:rotate(-12deg); }
+  40%     { transform:rotate(0deg); }
+}
+@keyframes cel-arm-b{
+  0%,100% { transform:rotate(20deg); }
+  35%     { transform:rotate(-120deg); }
+}
+@keyframes cel-arm-f{
+  0%,100% { transform:rotate(-10deg); }
+  35%     { transform:rotate(120deg); }
+}
+@keyframes cel-leg{
+  0%,100% { transform:rotate(0deg); }
+  40%     { transform:rotate(-25deg); }
+  60%     { transform:rotate(25deg); }
+}
+@keyframes cel-shadow{
+  0%,100% { transform:scaleX(1); opacity:.15; }
+  40%     { transform:scaleX(.5); opacity:.06; }
+}
+
+.team-players.celebrating .player-wrap { animation:cel-jump   .5s ease-in-out 3 !important; }
+.team-players.celebrating .p-body      { animation:cel-body   .5s ease-in-out 3 !important; }
+.team-players.celebrating .p-arm-b     { animation:cel-arm-b  .5s ease-in-out 3 !important; }
+.team-players.celebrating .p-arm-f     { animation:cel-arm-f  .5s ease-in-out 3 !important; }
+.team-players.celebrating .p-leg-b     { animation:cel-leg    .5s ease-in-out 3 !important; }
+.team-players.celebrating .p-leg-f     { animation:cel-leg    .5s ease-in-out 3 reverse !important; }
+.team-players.celebrating .p-shadow    { animation:cel-shadow .5s ease-in-out 3 !important; }
+
+/* ── SAD: slump, head droops ── */
+.team-players.sad .p-body {
+  animation:none !important;
+  transform:rotate(4deg) translateY(8px);
+  transition:transform .6s ease;
+}
+.team-players.sad .p-head {
+  animation:none !important;
+  transform:rotate(20deg);
+  transition:transform .6s ease;
+}
+.team-players.sad .p-arm-b {
+  animation:none !important;
+  transform:rotate(40deg);
+  transition:transform .6s ease;
+}
+.team-players.sad .p-arm-f {
+  animation:none !important;
+  transform:rotate(-30deg);
+  transition:transform .6s ease;
+}
+
+/* ── 3-COLUMN LAYOUT ── */
 /* ── 3-COLUMN LAYOUT ── */
 .game-cols{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:.7rem;align-items:start;flex:1;}
 .team-col{display:flex;flex-direction:column;gap:.45rem;}
