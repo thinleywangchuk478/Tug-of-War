@@ -1,11 +1,61 @@
 // ══════════════════════════════════════
-//  SOUND ENGINE  (Web Audio API — no files needed!)
-//  All sounds are synthesised in the browser
+//  SOUND ENGINE
+//  Plays custom files from audio/ folder if present,
+//  otherwise falls back to synthesised Web Audio sounds.
+//
+//  Drop any of these into an  audio/  folder:
+//    audio/bg.mp3       — background music loop
+//    audio/correct.mp3  — correct answer chime
+//    audio/wrong.mp3    — wrong answer buzz
+//    audio/pull.mp3     — rope pull thump
+//    audio/win.mp3      — win fanfare
+//    audio/newq.mp3     — new question pop
 // ══════════════════════════════════════
 let audioCtx = null;
 let soundOn  = true;
 let bgMusicNode = null;
 let bgGainNode  = null;
+
+// ── Custom audio cache ──
+// We try loading each file once; if it 404s we mark it null and use synth fallback.
+const customAudio = {
+  bg:      null,
+  correct: null,
+  wrong:   null,
+  pull:    null,
+  win:     null,
+  newq:    null
+};
+
+async function tryLoadAudio(key, path){
+  try {
+    const res = await fetch(path, { method: 'HEAD' });
+    if(res.ok) {
+      const audio = new Audio(path);
+      audio.preload = 'auto';
+      customAudio[key] = audio;
+    }
+  } catch(e){ /* file not present, use synth */ }
+}
+
+// Kick off all loads immediately (non-blocking)
+tryLoadAudio('bg',      'audio/bg.mp3');
+tryLoadAudio('correct', 'audio/correct.mp3');
+tryLoadAudio('wrong',   'audio/wrong.mp3');
+tryLoadAudio('pull',    'audio/pull.mp3');
+tryLoadAudio('win',     'audio/win.mp3');
+tryLoadAudio('newq',    'audio/newq.mp3');
+
+function playCustom(key, loop=false){
+  if(!soundOn) return false;
+  const a = customAudio[key];
+  if(!a) return false;
+  const clone = a.cloneNode(); // allow overlapping plays
+  clone.volume = key === 'bg' ? 0.3 : 0.9;
+  clone.loop   = loop;
+  clone.play().catch(()=>{});
+  return clone;
+}
 
 function getCtx(){
   if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
@@ -15,6 +65,9 @@ function getCtx(){
 function toggleSound(){
   soundOn = !soundOn;
   document.getElementById('sound-toggle').textContent = soundOn ? '🔊' : '🔇';
+  // Handle custom bg music volume
+  if(bgCustomNode) bgCustomNode.volume = soundOn ? 0.3 : 0;
+  // Handle synth bg music volume
   if(bgGainNode){
     bgGainNode.gain.setTargetAtTime(soundOn ? 0.07 : 0, getCtx().currentTime, 0.3);
   }
@@ -35,21 +88,31 @@ function toggleTheme(){
   }
 })();
 
-// ── Background music: cheerful pentatonic loop ──
+// ── Background music ──
+let bgCustomNode = null;
+
 function startBgMusic(){
   if(!soundOn) return;
+  // Try custom file first
+  if(customAudio['bg']){
+    if(bgCustomNode) return;
+    const a = customAudio['bg'].cloneNode();
+    a.loop   = true;
+    a.volume = 0.3;
+    a.play().catch(()=>{});
+    bgCustomNode = a;
+    return;
+  }
+  // Synth fallback
   const ctx = getCtx();
   if(bgMusicNode) return;
-
   bgGainNode = ctx.createGain();
   bgGainNode.gain.value = 0.07;
   bgGainNode.connect(ctx.destination);
-
   const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66];
   let step = 0;
   const bpm = 120;
   const beat = 60 / bpm;
-
   function playNote(){
     const osc   = ctx.createOscillator();
     const gain  = ctx.createGain();
@@ -68,12 +131,14 @@ function startBgMusic(){
 }
 
 function stopBgMusic(){
+  if(bgCustomNode){ bgCustomNode.pause(); bgCustomNode.currentTime=0; bgCustomNode=null; }
   if(bgMusicNode){ clearTimeout(bgMusicNode); bgMusicNode=null; }
 }
 
-// ── Correct answer: cheerful ascending arpeggio ──
+// ── Correct answer ──
 function playCorrect(){
   if(!soundOn) return;
+  if(playCustom('correct')) return;
   const ctx = getCtx();
   [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
     const osc  = ctx.createOscillator();
@@ -89,9 +154,10 @@ function playCorrect(){
   });
 }
 
-// ── Wrong answer: descending buzz ──
+// ── Wrong answer ──
 function playWrong(){
   if(!soundOn) return;
+  if(playCustom('wrong')) return;
   const ctx  = getCtx();
   const osc  = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -104,9 +170,10 @@ function playWrong(){
   osc.start(); osc.stop(ctx.currentTime + 0.5);
 }
 
-// ── Rope pull grunt: short thumpy hit ──
+// ── Rope pull grunt ──
 function playPull(){
   if(!soundOn) return;
+  if(playCustom('pull')) return;
   const ctx  = getCtx();
   const buf  = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
   const data = buf.getChannelData(0);
@@ -123,9 +190,10 @@ function playPull(){
   src.start();
 }
 
-// ── Question appear: soft pop ──
+// ── New question pop ──
 function playNewQ(){
   if(!soundOn) return;
+  if(playCustom('newq')) return;
   const ctx  = getCtx();
   const osc  = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -138,9 +206,10 @@ function playNewQ(){
   osc.start(); osc.stop(ctx.currentTime + 0.25);
 }
 
-// ── Win fanfare: triumphant 3-note burst ──
+// ── Win fanfare ──
 function playWinFanfare(){
   if(!soundOn) return;
+  if(playCustom('win')) return;
   const ctx = getCtx();
   const melody = [523.25, 659.25, 783.99, 1046.5, 1318.5];
   melody.forEach((freq, i) => {
@@ -254,15 +323,25 @@ function parseCSVRow(row){
 }
 
 function parseCSV(text){
-  const rows = text.trim().split('\n').map(l=>parseCSVRow(l));
-  topic = rows[1]?.[0] || "Dzongkha Quiz";
+  // Normalize line endings to fix Windows/Google Sheets export quirks
+  const rows = text.trim().replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').map(l=>parseCSVRow(l));
+  topic = rows[0]?.[0] || "Dzongkha Quiz";  // topic from row 0
   questions = [];
-  for(let i=1;i<rows.length;i++){
+  for(let i=0;i<rows.length;i++){
     const r=rows[i];
-    if(!r[1]||r[1].toLowerCase()==='question') continue;
-    let cor=parseInt(r[6]);
-    if(isNaN(cor)) cor=['A','B','C','D'].indexOf((r[6]||'A').toUpperCase().trim());
-    if(cor<0) cor=0;
+    // Skip empty rows and the header row (col B is literally "question")
+    if(!r[1]) continue;
+    if(r[1].toLowerCase().trim()==='question') continue;
+    // Answer in col G (index 6): accept A-D, 0-3 (zero-based), or 1-4 (one-based)
+    let cor;
+    const raw = (r[6]||'').toString().toUpperCase().trim();
+    if(['A','B','C','D'].includes(raw)){
+      cor = ['A','B','C','D'].indexOf(raw);
+    } else {
+      cor = parseInt(raw);
+      if(!isNaN(cor) && cor >= 1 && cor <= 4) cor = cor - 1; // convert 1-based to 0-based
+    }
+    if(isNaN(cor) || cor < 0 || cor > 3) cor = 0;
     questions.push({q:r[1], choices:[r[2]||'',r[3]||'',r[4]||'',r[5]||''], correct:cor});
   }
 }
