@@ -354,66 +354,106 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 .team-players.wrong .p-body { animation:wrong-lean .5s ease 2 !important; }
 .team-players.wrong .p-head { animation:wrong-head .5s ease 2 !important; }
 
-/* ── CELEBRATE: jump up, arms raised ── */
+/* ── CELEBRATE: big continuous jump, arms waving ── */
 @keyframes cel-jump{
-  0%      { transform:translateY(0); }
-  25%     { transform:translateY(-30px); }
-  45%     { transform:translateY(-34px); }
-  65%     { transform:translateY(-14px); }
-  80%     { transform:translateY(-28px); }
-  100%    { transform:translateY(0); }
+  0%        { transform:translateY(0) scaleY(1); }
+  10%       { transform:translateY(0) scaleY(.88); }   /* squash before jump */
+  30%       { transform:translateY(-42px) scaleY(1.08); } /* peak air */
+  50%       { transform:translateY(-48px) scaleY(1.05); } /* hang */
+  70%       { transform:translateY(-18px) scaleY(1); }
+  88%       { transform:translateY(0) scaleY(.9); }    /* land squash */
+  100%      { transform:translateY(0) scaleY(1); }
 }
 @keyframes cel-body{
-  0%,100% { transform:rotate(-12deg); }
-  40%     { transform:rotate(0deg); }
+  0%,100%   { transform:rotate(-12deg); }
+  35%,65%   { transform:rotate(4deg); }
 }
 @keyframes cel-arm-b{
-  0%,100% { transform:rotate(20deg); }
-  35%     { transform:rotate(-120deg); }
+  0%,100%   { transform:rotate(20deg); }
+  30%,60%   { transform:rotate(-140deg); }  /* arms shoot straight up */
 }
 @keyframes cel-arm-f{
-  0%,100% { transform:rotate(-10deg); }
-  35%     { transform:rotate(120deg); }
+  0%,100%   { transform:rotate(-10deg); }
+  30%,60%   { transform:rotate(140deg); }
 }
-@keyframes cel-leg{
-  0%,100% { transform:rotate(0deg); }
-  40%     { transform:rotate(-25deg); }
-  60%     { transform:rotate(25deg); }
+@keyframes cel-leg-b{
+  0%,100%   { transform:rotate(0deg); }
+  25%       { transform:rotate(-30deg); }
+  60%       { transform:rotate(20deg); }
+}
+@keyframes cel-leg-f{
+  0%,100%   { transform:rotate(0deg); }
+  25%       { transform:rotate(30deg); }
+  60%       { transform:rotate(-20deg); }
 }
 @keyframes cel-shadow{
-  0%,100% { transform:scaleX(1); opacity:.15; }
-  40%     { transform:scaleX(.5); opacity:.06; }
+  0%,88%,100% { transform:scaleX(1);   opacity:.15; }
+  30%,60%     { transform:scaleX(.35); opacity:.05; }
+}
+@keyframes cel-head{
+  0%,100%   { transform:rotate(8deg); }
+  35%,65%   { transform:rotate(-14deg); }
 }
 
-.team-players.celebrating .player-wrap { animation:cel-jump   .5s ease-in-out 3 !important; }
-.team-players.celebrating .p-body      { animation:cel-body   .5s ease-in-out 3 !important; }
-.team-players.celebrating .p-arm-b     { animation:cel-arm-b  .5s ease-in-out 3 !important; }
-.team-players.celebrating .p-arm-f     { animation:cel-arm-f  .5s ease-in-out 3 !important; }
-.team-players.celebrating .p-leg-b     { animation:cel-leg    .5s ease-in-out 3 !important; }
-.team-players.celebrating .p-leg-f     { animation:cel-leg    .5s ease-in-out 3 reverse !important; }
-.team-players.celebrating .p-shadow    { animation:cel-shadow .5s ease-in-out 3 !important; }
+/* infinite = keeps going until class is removed */
+.team-players.celebrating .player-wrap { animation:cel-jump   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-body      { animation:cel-body   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-head      { animation:cel-head   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-arm-b     { animation:cel-arm-b  .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-arm-f     { animation:cel-arm-f  .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-leg-b     { animation:cel-leg-b  .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-leg-f     { animation:cel-leg-f  .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-shadow    { animation:cel-shadow .65s ease-in-out infinite !important; }
 
-/* ── SAD: slump, head droops ── */
-.team-players.sad .p-body {
-  animation:none !important;
-  transform:rotate(4deg) translateY(8px);
-  transition:transform .6s ease;
+/* stagger p2 for natural look */
+.team-players.celebrating #pa2 .player-wrap,
+.team-players.celebrating #pa2 .p-body,
+.team-players.celebrating #pa2 .p-head,
+.team-players.celebrating #pa2 .p-arm-b,
+.team-players.celebrating #pa2 .p-arm-f,
+.team-players.celebrating #pa2 .p-leg-b,
+.team-players.celebrating #pa2 .p-leg-f,
+.team-players.celebrating #pb2 .player-wrap,
+.team-players.celebrating #pb2 .p-body,
+.team-players.celebrating #pb2 .p-head,
+.team-players.celebrating #pb2 .p-arm-b,
+.team-players.celebrating #pb2 .p-arm-f,
+.team-players.celebrating #pb2 .p-leg-b,
+.team-players.celebrating #pb2 .p-leg-f { animation-delay:.32s !important; }
+
+/* ── SAD: slow slump down, head hangs, stays in position ── */
+@keyframes sad-slump{
+  0%    { transform:rotate(-12deg) translateY(0); }
+  100%  { transform:rotate(14deg) translateY(14px); }
 }
-.team-players.sad .p-head {
-  animation:none !important;
-  transform:rotate(20deg);
-  transition:transform .6s ease;
+@keyframes sad-head{
+  0%    { transform:rotate(8deg); }
+  100%  { transform:rotate(35deg); }
 }
-.team-players.sad .p-arm-b {
-  animation:none !important;
-  transform:rotate(40deg);
-  transition:transform .6s ease;
+@keyframes sad-arm-b{
+  0%    { transform:rotate(20deg); }
+  100%  { transform:rotate(55deg); }
 }
-.team-players.sad .p-arm-f {
-  animation:none !important;
-  transform:rotate(-30deg);
-  transition:transform .6s ease;
+@keyframes sad-arm-f{
+  0%    { transform:rotate(-10deg); }
+  100%  { transform:rotate(-50deg); }
 }
+@keyframes sad-leg-b{
+  0%    { transform:rotate(-8deg); }
+  100%  { transform:rotate(10deg); }
+}
+@keyframes sad-leg-f{
+  0%    { transform:rotate(14deg); }
+  100%  { transform:rotate(5deg); }
+}
+
+/* runs once, stays at final frame (forwards) */
+.team-players.sad .p-body  { animation:sad-slump  .9s ease-out 1 forwards !important; }
+.team-players.sad .p-head  { animation:sad-head   .9s ease-out 1 forwards !important; }
+.team-players.sad .p-arm-b { animation:sad-arm-b  .9s ease-out 1 forwards !important; }
+.team-players.sad .p-arm-f { animation:sad-arm-f  .9s ease-out 1 forwards !important; }
+.team-players.sad .p-leg-b { animation:sad-leg-b  .9s ease-out 1 forwards !important; }
+.team-players.sad .p-leg-f { animation:sad-leg-f  .9s ease-out 1 forwards !important; }
 
 /* ── 3-COLUMN LAYOUT ── */
 /* ── 3-COLUMN LAYOUT ── */
