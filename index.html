@@ -8,10 +8,7 @@
 </head>
 <body>
 
-<!-- Sound toggle button (always visible) -->
 <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle sound">🔊</div>
-
-<!-- Day / Night toggle -->
 <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle day/night mode">
   <div class="track"></div>
   <span style="position:relative;z-index:1;font-size:.95rem;">🌙</span>
@@ -22,7 +19,7 @@
 <div id="landing">
   <div>
     <div class="brand-title">🏹 རྫོང་ཁ་ Tug of War</div>
-    <div class="brand-dz">སློབ་ཁང་གི་རྩེད་མོ། · Classroom Learning Game</div>
+    <div class="brand-dz">སློབ་གྲྭའི་རྩེད་མོ། · Classroom Learning Game</div>
   </div>
   <div class="land-card">
     <h2>🎓 Teacher — Load Your Questions</h2>
@@ -53,89 +50,283 @@
     <button class="btn-sm" onclick="backHome()">← Home</button>
   </div>
 
-  <!-- Tug arena -->
-  <div class="arena">
+  <!-- ═══ TUG ARENA ═══ -->
+  <div class="arena" id="arena">
+
+    <!-- ground line -->
+    <div class="arena-ground"></div>
+
+    <!-- win zones -->
     <div class="win-zone l"></div>
     <div class="win-zone r"></div>
-    <div class="arena-ground"></div>
-    <div class="rope-track">
-      <svg viewBox="0 0 800 16" preserveAspectRatio="none">
-        <defs>
-          <pattern id="rp" x="0" y="0" width="20" height="16" patternUnits="userSpaceOnUse">
-            <rect width="14" height="16" fill="#8B5E3C"/>
-            <rect x="14" width="6" height="16" fill="#6b4423"/>
-            <line x1="0" y1="4" x2="20" y2="4" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
-            <line x1="0" y1="8" x2="20" y2="8" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
-            <line x1="0" y1="12" x2="20" y2="12" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
-          </pattern>
-        </defs>
-        <rect width="800" height="16" rx="8" fill="url(#rp)"/>
-        <rect width="800" height="16" rx="8" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
-      </svg>
-    </div>
+
+    <!-- ROPE SVG — spans full arena width -->
+    <svg class="rope-svg" id="rope-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <pattern id="rp" x="0" y="0" width="20" height="12" patternUnits="userSpaceOnUse">
+          <rect width="13" height="12" fill="#8B5E3C"/>
+          <rect x="13" width="7" height="12" fill="#6b4423"/>
+          <line x1="0" y1="3" x2="20" y2="3" stroke="#a0723d" stroke-width="1" opacity=".5"/>
+          <line x1="0" y1="6" x2="20" y2="6" stroke="#a0723d" stroke-width="1" opacity=".5"/>
+          <line x1="0" y1="9" x2="20" y2="9" stroke="#a0723d" stroke-width="1" opacity=".5"/>
+        </pattern>
+      </defs>
+      <rect id="rope-rect" x="0" y="0" width="100%" height="12" rx="6" fill="url(#rp)"/>
+    </svg>
+
+    <!-- FLAG -->
     <div class="rope-flag" id="rope-flag" style="left:50%">
       <div class="rope-pole"></div>
       <div class="rope-cloth"></div>
     </div>
-    <!-- Gho boy (Team A) -->
-    <svg class="char cl" id="char-l" viewBox="0 0 110 135" xmlns="http://www.w3.org/2000/svg">
-      <rect x="35" y="98" width="16" height="32" rx="5" fill="#1a3560"/>
-      <rect x="58" y="98" width="16" height="32" rx="5" fill="#1a3560"/>
-      <ellipse cx="43" cy="129" rx="11" ry="5" fill="#111"/>
-      <ellipse cx="66" cy="129" rx="11" ry="5" fill="#111"/>
-      <rect x="27" y="58" width="56" height="44" rx="6" fill="#3B6EA5"/>
-      <rect x="27" y="64" width="56" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
-      <rect x="27" y="74" width="56" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
-      <rect x="27" y="84" width="56" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
-      <rect x="25" y="97" width="60" height="7" rx="3" fill="#e8a020"/>
-      <rect x="44" y="56" width="22" height="13" rx="3" fill="#f0ede8"/>
-      <rect x="49" y="46" width="14" height="14" rx="4" fill="#c8956a"/>
-      <ellipse cx="56" cy="34" rx="20" ry="22" fill="#c8956a"/>
-      <ellipse cx="56" cy="15" rx="20" ry="9" fill="#1a0a00"/>
-      <ellipse cx="48" cy="32" rx="4" ry="4.5" fill="white"/>
-      <ellipse cx="64" cy="32" rx="4" ry="4.5" fill="white"/>
-      <circle cx="49" cy="33" r="2.5" fill="#1a0a00"/>
-      <circle cx="65" cy="33" r="2.5" fill="#1a0a00"/>
-      <circle cx="50" cy="32" r="1" fill="white"/>
-      <circle cx="66" cy="32" r="1" fill="white"/>
-      <path d="M44 27 Q48 24 52 27" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M60 27 Q64 24 68 27" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M48 43 Q56 49 64 43" stroke="#7a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <rect x="10" y="62" width="22" height="11" rx="5" fill="#c8956a" transform="rotate(-12 10 68)"/>
-      <ellipse cx="9" cy="71" rx="7" ry="6" fill="#b07a50"/>
-      <rect x="79" y="65" width="18" height="10" rx="5" fill="#3B6EA5"/>
-    </svg>
-    <!-- Kira girl (Team B) -->
-    <svg class="char cr" id="char-r" viewBox="0 0 110 135" xmlns="http://www.w3.org/2000/svg">
-      <rect x="35" y="100" width="16" height="30" rx="5" fill="#922b21"/>
-      <rect x="58" y="100" width="16" height="30" rx="5" fill="#922b21"/>
-      <ellipse cx="43" cy="129" rx="11" ry="5" fill="#111"/>
-      <ellipse cx="66" cy="129" rx="11" ry="5" fill="#111"/>
-      <rect x="26" y="72" width="58" height="32" rx="5" fill="#c0392b"/>
-      <rect x="26" y="76" width="58" height="3" fill="rgba(255,255,255,.2)" rx="1"/>
-      <rect x="26" y="84" width="58" height="3" fill="rgba(255,255,255,.2)" rx="1"/>
-      <rect x="26" y="92" width="58" height="3" fill="rgba(255,255,255,.2)" rx="1"/>
-      <rect x="31" y="54" width="48" height="24" rx="6" fill="#e8a020"/>
-      <rect x="11" y="58" width="22" height="10" rx="5" fill="#f0ede8"/>
-      <rect x="77" y="58" width="22" height="10" rx="5" fill="#f0ede8"/>
-      <circle cx="55" cy="56" r="4" fill="#fff" stroke="#e8a020" stroke-width="2"/>
-      <rect x="48" y="45" width="14" height="13" rx="4" fill="#c8956a"/>
-      <ellipse cx="55" cy="33" rx="19" ry="21" fill="#c8956a"/>
-      <ellipse cx="55" cy="14" rx="19" ry="8" fill="#1a0a00"/>
-      <ellipse cx="55" cy="10" rx="9" ry="7" fill="#1a0a00"/>
-      <ellipse cx="47" cy="31" rx="4" ry="4.5" fill="white"/>
-      <ellipse cx="63" cy="31" rx="4" ry="4.5" fill="white"/>
-      <circle cx="48" cy="32" r="2.5" fill="#1a0a00"/>
-      <circle cx="64" cy="32" r="2.5" fill="#1a0a00"/>
-      <circle cx="49" cy="31" r="1" fill="white"/>
-      <circle cx="65" cy="31" r="1" fill="white"/>
-      <path d="M43 26 Q47 23 51 26" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M59 26 Q63 23 67 26" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M47 42 Q55 48 63 42" stroke="#7a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <rect x="77" y="60" width="22" height="11" rx="5" fill="#c8956a" transform="rotate(12 77 66)"/>
-      <ellipse cx="100" cy="69" rx="7" ry="6" fill="#b07a50"/>
-    </svg>
-  </div>
+
+    <!-- ═══ TEAM A — 2 players left side ═══ -->
+    <div class="team-players left" id="team-a-players">
+
+      <!-- Player A1 (back, further from rope) -->
+      <div class="player-wrap" id="pa1">
+        <svg viewBox="0 0 80 130" class="player-svg" xmlns="http://www.w3.org/2000/svg">
+          <!-- shadow -->
+          <ellipse cx="40" cy="126" rx="22" ry="5" fill="rgba(0,0,0,.15)" class="p-shadow"/>
+          <!-- back leg -->
+          <g class="p-leg-b">
+            <rect x="30" y="82" width="13" height="28" rx="6" fill="#1a3560" transform-origin="36 82"/>
+            <rect x="29" y="106" width="12" height="20" rx="5" fill="#1a3560" transform-origin="35 106"/>
+            <ellipse cx="34" cy="124" rx="14" ry="5" fill="#0a1a30"/>
+            <!-- shoe highlight -->
+            <ellipse cx="38" cy="122" rx="5" ry="2.5" fill="#2a4a80" opacity=".6"/>
+          </g>
+          <!-- front leg -->
+          <g class="p-leg-f">
+            <rect x="43" y="82" width="13" height="28" rx="6" fill="#243f70" transform-origin="49 82"/>
+            <rect x="42" y="106" width="12" height="20" rx="5" fill="#243f70" transform-origin="48 106"/>
+            <ellipse cx="50" cy="124" rx="14" ry="5" fill="#1a2e58"/>
+            <ellipse cx="54" cy="122" rx="5" ry="2.5" fill="#3a5a9a" opacity=".6"/>
+          </g>
+          <!-- body / Gho -->
+          <g class="p-body">
+            <rect x="22" y="48" width="36" height="38" rx="7" fill="#3B6EA5"/>
+            <rect x="22" y="54" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="62" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="70" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <!-- kera belt -->
+            <rect x="20" y="82" width="40" height="7" rx="3" fill="#e8a020"/>
+            <!-- collar -->
+            <rect x="30" y="46" width="20" height="10" rx="3" fill="#f0ede8"/>
+          </g>
+          <!-- back arm — reaches forward to rope -->
+          <g class="p-arm-b">
+            <rect x="54" y="52" width="11" height="22" rx="5" fill="#3B6EA5" transform-origin="59 52"/>
+            <rect x="55" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="60 71"/>
+            <ellipse cx="60" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+          <!-- head -->
+          <g class="p-head">
+            <rect x="32" y="36" width="16" height="14" rx="3" fill="#c8956a"/>
+            <ellipse cx="40" cy="26" rx="18" ry="19" fill="#c8956a"/>
+            <!-- Bhutanese Drasha hat -->
+            <ellipse cx="40" cy="10" rx="19" ry="8" fill="#e8e0d0"/>
+            <ellipse cx="40" cy="8"  rx="14" ry="6" fill="#d4cbbf"/>
+            <rect x="23" y="8" width="34" height="6" rx="3" fill="#c8c0b0"/>
+            <!-- hat band -->
+            <rect x="24" y="13" width="32" height="3" rx="1" fill="#1a0a00" opacity=".3"/>
+            <!-- eyes -->
+            <ellipse cx="33" cy="27" rx="4" ry="4.5" fill="white"/>
+            <ellipse cx="47" cy="27" rx="4" ry="4.5" fill="white"/>
+            <circle class="pupil-l" cx="34" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle class="pupil-r" cx="48" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle cx="35" cy="27" r="1" fill="white"/>
+            <circle cx="49" cy="27" r="1" fill="white"/>
+            <!-- eyebrows -->
+            <path class="p-brow-l" d="M30 22 Q33 19 36 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-brow-r" d="M44 22 Q47 19 50 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <!-- mouth -->
+            <path class="p-mouth" d="M35 36 Q40 40 45 36" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <!-- sweat -->
+            <ellipse class="p-sweat" cx="56" cy="20" rx="3.5" ry="4" fill="#7ab8ff" opacity="0"/>
+          </g>
+          <!-- front arm — braced behind body -->
+          <g class="p-arm-f">
+            <rect x="15" y="52" width="11" height="22" rx="5" fill="#c8956a" transform-origin="21 52"/>
+            <rect x="14" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="19 71"/>
+            <ellipse cx="19" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Player A2 (front, closer to rope) -->
+      <div class="player-wrap" id="pa2">
+        <svg viewBox="0 0 80 130" class="player-svg" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="126" rx="22" ry="5" fill="rgba(0,0,0,.15)" class="p-shadow"/>
+          <g class="p-leg-b">
+            <rect x="30" y="82" width="13" height="28" rx="6" fill="#1a3560" transform-origin="36 82"/>
+            <rect x="29" y="106" width="12" height="20" rx="5" fill="#1a3560" transform-origin="35 106"/>
+            <ellipse cx="34" cy="124" rx="14" ry="5" fill="#0a1a30"/>
+            <ellipse cx="38" cy="122" rx="5" ry="2.5" fill="#2a4a80" opacity=".6"/>
+          </g>
+          <g class="p-leg-f">
+            <rect x="43" y="82" width="13" height="28" rx="6" fill="#243f70" transform-origin="49 82"/>
+            <rect x="42" y="106" width="12" height="20" rx="5" fill="#243f70" transform-origin="48 106"/>
+            <ellipse cx="50" cy="124" rx="14" ry="5" fill="#1a2e58"/>
+            <ellipse cx="54" cy="122" rx="5" ry="2.5" fill="#3a5a9a" opacity=".6"/>
+          </g>
+          <g class="p-body">
+            <rect x="22" y="48" width="36" height="38" rx="7" fill="#2d5a8e"/>
+            <rect x="22" y="54" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="62" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="70" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="20" y="82" width="40" height="7" rx="3" fill="#e8a020"/>
+            <rect x="30" y="46" width="20" height="10" rx="3" fill="#f0ede8"/>
+          </g>
+          <g class="p-arm-b">
+            <rect x="54" y="52" width="11" height="22" rx="5" fill="#2d5a8e" transform-origin="59 52"/>
+            <rect x="55" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="60 71"/>
+            <ellipse cx="60" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+          <g class="p-head">
+            <rect x="32" y="36" width="16" height="14" rx="3" fill="#c8956a"/>
+            <ellipse cx="40" cy="26" rx="18" ry="19" fill="#c8956a"/>
+            <ellipse cx="40" cy="10" rx="19" ry="8" fill="#e8e0d0"/>
+            <ellipse cx="40" cy="8"  rx="14" ry="6" fill="#d4cbbf"/>
+            <rect x="23" y="8" width="34" height="6" rx="3" fill="#c8c0b0"/>
+            <rect x="24" y="13" width="32" height="3" rx="1" fill="#1a0a00" opacity=".3"/>
+            <ellipse cx="33" cy="27" rx="4" ry="4.5" fill="white"/>
+            <ellipse cx="47" cy="27" rx="4" ry="4.5" fill="white"/>
+            <circle class="pupil-l" cx="34" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle class="pupil-r" cx="48" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle cx="35" cy="27" r="1" fill="white"/>
+            <circle cx="49" cy="27" r="1" fill="white"/>
+            <path class="p-brow-l" d="M30 22 Q33 19 36 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-brow-r" d="M44 22 Q47 19 50 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-mouth" d="M35 36 Q40 40 45 36" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <ellipse class="p-sweat" cx="56" cy="20" rx="3.5" ry="4" fill="#7ab8ff" opacity="0"/>
+          </g>
+          <g class="p-arm-f">
+            <rect x="15" y="52" width="11" height="22" rx="5" fill="#c8956a" transform-origin="21 52"/>
+            <rect x="14" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="19 71"/>
+            <ellipse cx="19" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+        </svg>
+      </div>
+
+    </div><!-- /team-a-players -->
+
+    <!-- ═══ TEAM B — 2 players right side (mirrored) ═══ -->
+    <div class="team-players right" id="team-b-players">
+
+      <!-- Player B1 (front, closer to rope) -->
+      <div class="player-wrap" id="pb1">
+        <svg viewBox="0 0 80 130" class="player-svg" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="126" rx="22" ry="5" fill="rgba(0,0,0,.15)" class="p-shadow"/>
+          <g class="p-leg-b">
+            <rect x="30" y="82" width="13" height="28" rx="6" fill="#7b241c" transform-origin="36 82"/>
+            <rect x="29" y="106" width="12" height="20" rx="5" fill="#7b241c" transform-origin="35 106"/>
+            <ellipse cx="34" cy="124" rx="14" ry="5" fill="#3a0a08"/>
+            <ellipse cx="38" cy="122" rx="5" ry="2.5" fill="#c0392b" opacity=".6"/>
+          </g>
+          <g class="p-leg-f">
+            <rect x="43" y="82" width="13" height="28" rx="6" fill="#922b21" transform-origin="49 82"/>
+            <rect x="42" y="106" width="12" height="20" rx="5" fill="#922b21" transform-origin="48 106"/>
+            <ellipse cx="50" cy="124" rx="14" ry="5" fill="#5a1a14"/>
+            <ellipse cx="54" cy="122" rx="5" ry="2.5" fill="#e74c3c" opacity=".6"/>
+          </g>
+          <g class="p-body">
+            <rect x="22" y="48" width="36" height="38" rx="7" fill="#c0392b"/>
+            <rect x="22" y="54" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="62" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="70" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="20" y="82" width="40" height="7" rx="3" fill="#e8a020"/>
+            <rect x="30" y="46" width="20" height="10" rx="3" fill="#f0ede8"/>
+          </g>
+          <g class="p-arm-b">
+            <rect x="54" y="52" width="11" height="22" rx="5" fill="#c0392b" transform-origin="59 52"/>
+            <rect x="55" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="60 71"/>
+            <ellipse cx="60" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+          <g class="p-head">
+            <rect x="32" y="36" width="16" height="14" rx="3" fill="#c8956a"/>
+            <ellipse cx="40" cy="26" rx="18" ry="19" fill="#c8956a"/>
+            <ellipse cx="40" cy="10" rx="19" ry="8" fill="#e8e0d0"/>
+            <ellipse cx="40" cy="8"  rx="14" ry="6" fill="#d4cbbf"/>
+            <rect x="23" y="8" width="34" height="6" rx="3" fill="#c8c0b0"/>
+            <rect x="24" y="13" width="32" height="3" rx="1" fill="#1a0a00" opacity=".3"/>
+            <ellipse cx="33" cy="27" rx="4" ry="4.5" fill="white"/>
+            <ellipse cx="47" cy="27" rx="4" ry="4.5" fill="white"/>
+            <circle class="pupil-l" cx="34" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle class="pupil-r" cx="48" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle cx="35" cy="27" r="1" fill="white"/>
+            <circle cx="49" cy="27" r="1" fill="white"/>
+            <path class="p-brow-l" d="M30 22 Q33 19 36 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-brow-r" d="M44 22 Q47 19 50 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-mouth" d="M35 36 Q40 40 45 36" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <ellipse class="p-sweat" cx="56" cy="20" rx="3.5" ry="4" fill="#7ab8ff" opacity="0"/>
+          </g>
+          <g class="p-arm-f">
+            <rect x="15" y="52" width="11" height="22" rx="5" fill="#c8956a" transform-origin="21 52"/>
+            <rect x="14" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="19 71"/>
+            <ellipse cx="19" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Player B2 (back) -->
+      <div class="player-wrap" id="pb2">
+        <svg viewBox="0 0 80 130" class="player-svg" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="126" rx="22" ry="5" fill="rgba(0,0,0,.15)" class="p-shadow"/>
+          <g class="p-leg-b">
+            <rect x="30" y="82" width="13" height="28" rx="6" fill="#7b241c" transform-origin="36 82"/>
+            <rect x="29" y="106" width="12" height="20" rx="5" fill="#7b241c" transform-origin="35 106"/>
+            <ellipse cx="34" cy="124" rx="14" ry="5" fill="#3a0a08"/>
+            <ellipse cx="38" cy="122" rx="5" ry="2.5" fill="#c0392b" opacity=".6"/>
+          </g>
+          <g class="p-leg-f">
+            <rect x="43" y="82" width="13" height="28" rx="6" fill="#922b21" transform-origin="49 82"/>
+            <rect x="42" y="106" width="12" height="20" rx="5" fill="#922b21" transform-origin="48 106"/>
+            <ellipse cx="50" cy="124" rx="14" ry="5" fill="#5a1a14"/>
+            <ellipse cx="54" cy="122" rx="5" ry="2.5" fill="#e74c3c" opacity=".6"/>
+          </g>
+          <g class="p-body">
+            <rect x="22" y="48" width="36" height="38" rx="7" fill="#e74c3c"/>
+            <rect x="22" y="54" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="62" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="22" y="70" width="36" height="3" fill="rgba(255,255,255,.18)" rx="1"/>
+            <rect x="20" y="82" width="40" height="7" rx="3" fill="#e8a020"/>
+            <rect x="30" y="46" width="20" height="10" rx="3" fill="#f0ede8"/>
+          </g>
+          <g class="p-arm-b">
+            <rect x="54" y="52" width="11" height="22" rx="5" fill="#e74c3c" transform-origin="59 52"/>
+            <rect x="55" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="60 71"/>
+            <ellipse cx="60" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+          <g class="p-head">
+            <rect x="32" y="36" width="16" height="14" rx="3" fill="#c8956a"/>
+            <ellipse cx="40" cy="26" rx="18" ry="19" fill="#c8956a"/>
+            <ellipse cx="40" cy="10" rx="19" ry="8" fill="#e8e0d0"/>
+            <ellipse cx="40" cy="8"  rx="14" ry="6" fill="#d4cbbf"/>
+            <rect x="23" y="8" width="34" height="6" rx="3" fill="#c8c0b0"/>
+            <rect x="24" y="13" width="32" height="3" rx="1" fill="#1a0a00" opacity=".3"/>
+            <ellipse cx="33" cy="27" rx="4" ry="4.5" fill="white"/>
+            <ellipse cx="47" cy="27" rx="4" ry="4.5" fill="white"/>
+            <circle class="pupil-l" cx="34" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle class="pupil-r" cx="48" cy="28" r="2.5" fill="#1a0a00"/>
+            <circle cx="35" cy="27" r="1" fill="white"/>
+            <circle cx="49" cy="27" r="1" fill="white"/>
+            <path class="p-brow-l" d="M30 22 Q33 19 36 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-brow-r" d="M44 22 Q47 19 50 22" stroke="#1a0a00" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path class="p-mouth" d="M35 36 Q40 40 45 36" stroke="#7a3a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <ellipse class="p-sweat" cx="56" cy="20" rx="3.5" ry="4" fill="#7ab8ff" opacity="0"/>
+          </g>
+          <g class="p-arm-f">
+            <rect x="15" y="52" width="11" height="22" rx="5" fill="#c8956a" transform-origin="21 52"/>
+            <rect x="14" y="71" width="10" height="18" rx="5" fill="#c8956a" transform-origin="19 71"/>
+            <ellipse cx="19" cy="90" rx="7" ry="6" fill="#b07a50"/>
+          </g>
+        </svg>
+      </div>
+
+    </div><!-- /team-b-players -->
+
+  </div><!-- /arena -->
 
   <!-- 3-column layout -->
   <div class="game-cols">
