@@ -364,6 +364,7 @@ function startGame(){
 function renderQ(){
   if(currentQ >= questions.length){ showWin('end'); return; }
   answered=false;
+  clearCharStates(); // reset characters to idle breathing
   const q=questions[currentQ];
   const L=['A','B','C','D'];
   document.getElementById('qnum').textContent=currentQ+1;
@@ -387,6 +388,14 @@ function renderQ(){
   });
 }
 
+// ── Helper: clear all animation state classes ──
+function clearCharStates(){
+  ['team-a-players','team-b-players'].forEach(id=>{
+    const c = document.getElementById(id);
+    c.classList.remove('pulling','wrong','celebrating','sad');
+  });
+}
+
 function pick(idx, team){
   if(answered) return;
   answered=true;
@@ -403,6 +412,8 @@ function pick(idx, team){
 
   const fb=document.getElementById('feedback');
   const rb=document.getElementById('race-banner');
+  const winner = document.getElementById(team===0?'team-a-players':'team-b-players');
+  const loser  = document.getElementById(team===0?'team-b-players':'team-a-players');
 
   if(correct){
     document.querySelectorAll(`.ans-btn[data-team="${team}"][data-idx="${idx}"]`).forEach(b=>{
@@ -419,9 +430,12 @@ function pick(idx, team){
     playCorrect();
     setTimeout(playPull, 300);
 
-    const ch=document.getElementById(team===0?'char-l':'char-r');
-    ch.classList.add('pull');
-    setTimeout(()=>ch.classList.remove('pull'),1600);
+    // Winner pulls hard, loser stumbles
+    clearCharStates();
+    winner.classList.add('pulling');
+    loser.classList.add('wrong');
+    setTimeout(()=>{ winner.classList.remove('pulling'); loser.classList.remove('wrong'); }, 1700);
+
   } else {
     document.querySelectorAll(`.ans-btn[data-team="${team}"][data-idx="${idx}"]`).forEach(b=>{
       b.classList.remove('dim'); b.classList.add('wrong');
@@ -430,11 +444,15 @@ function pick(idx, team){
     fb.className   = 'feedback no';
     rb.textContent = 'No pull this round — rope stays!';
     playWrong();
-    ['char-l','char-r'].forEach(id=>{
-      const c=document.getElementById(id);
-      c.classList.add('shk');
-      setTimeout(()=>c.classList.remove('shk'),700);
+
+    // Both shake
+    clearCharStates();
+    ['team-a-players','team-b-players'].forEach(id=>{
+      document.getElementById(id).classList.add('wrong');
     });
+    setTimeout(()=>{
+      ['team-a-players','team-b-players'].forEach(id=>document.getElementById(id).classList.remove('wrong'));
+    }, 1000);
   }
 
   updateRope(); updateScores();
@@ -444,7 +462,23 @@ function pick(idx, team){
   setTimeout(renderQ, 2000);
 }
 
-function updateRope(){ document.getElementById('rope-flag').style.left=ropePos+'%'; }
+function updateRope(){
+  document.getElementById('rope-flag').style.left = ropePos + '%';
+
+  // How far has rope moved from centre (50)?
+  // Positive = rope went right (Team B pulled), negative = went left (Team A pulled)
+  const offset = ropePos - 50;           // range roughly -45 to +45
+  const drag   = offset * 1.4;           // amplify slightly for visible effect
+
+  // Left team gets dragged RIGHT when rope goes right (Team B wins pull)
+  // Right team gets dragged LEFT when rope goes left (Team A wins pull)
+  const teamA = document.getElementById('team-a-players');
+  const teamB = document.getElementById('team-b-players');
+
+  teamA.style.transform = `translateX(${drag}px)`;
+  // Team B is already scaleX(-1) so we add translateX in the same direction
+  teamB.style.transform = `scaleX(-1) translateX(${-drag}px)`;
+}
 function updateScores(){
   document.getElementById('pts-a').textContent=scores[0];
   document.getElementById('pts-b').textContent=scores[1];
@@ -500,6 +534,9 @@ function spawnConfetti(){
 function restartGame(){ document.getElementById('win-overlay').style.display='none'; startGame(); }
 function backHome(){
   stopBgMusic();
+  // Reset team positions
+  document.getElementById('team-a-players').style.transform = '';
+  document.getElementById('team-b-players').style.transform = 'scaleX(-1)';
   document.getElementById('game').style.display='none';
   document.getElementById('win-overlay').style.display='none';
   document.getElementById('landing').style.display='flex';
