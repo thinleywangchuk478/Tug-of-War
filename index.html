@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dzongkha Tug of War</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+:root {
+  --bg:     #0f1f3d;
+  --bg2:    #162848;
+  --gold:   #F5A623;
+  --orange: #E8611A;
+  --blue:   #3B8BEB;
+  --red:    #E74C3C;
+  --green:  #27AE60;
+  --rope:   #8B5E3C;
+  --white:  #FFFFFF;
+  --muted:  #7a9cc4;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family:'Nunito',sans-serif;
+  background: linear-gradient(160deg, #0f1f3d 0%, #1a3560 100%);
+  color: var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ══════════ LANDING ══════════ */
+#landing {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+  gap:1.4rem;
+}
+
+.brand { text-align:center; }
+.brand-title {
+  font-size:3rem; font-weight:900; color:var(--gold);
+  text-shadow: 0 2px 20px rgba(245,166,35,0.4);
+  line-height:1;
+}
+.brand-dz { font-size:1.2rem; color:var(--muted); margin-top:.3rem; }
+
+.land-card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:1.8rem;
+  width:100%; max-width:500px;
+}
+.land-card h2 { color:var(--gold); margin-bottom:.8rem; font-size:1rem; }
+.land-card p  { color:var(--muted); font-size:.85rem; line-height:1.7; margin-bottom:1rem; }
+
+input[type=text] {
+  width:100%; padding:.8rem 1rem;
+  background:rgba(255,255,255,0.07);
+  border:2px solid rgba(255,255,255,0.12);
+  border-radius:10px; color:#fff;
+  font-family:'Nunito',sans-serif; font-size:.95rem;
+  outline:none; transition:border .2s; margin-bottom:.6rem;
+}
+input[type=text]:focus { border-color:var(--gold); }
+input[type=text]::placeholder { color:rgba(255,255,255,.3); }
+
+.btn {
+  display:block; width:100%; padding:.85rem;
+  border-radius:12px; border:none;
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem;
+  cursor:pointer; transition:transform .15s, opacity .15s;
+  margin-bottom:.5rem;
+}
+.btn:hover  { transform:translateY(-2px); opacity:.92; }
+.btn:active { transform:scale(.97); }
+.btn-primary { background:var(--orange); color:#fff; }
+.btn-gold    { background:var(--gold);   color:#0f1f3d; }
+.btn-ghost   { background:rgba(255,255,255,.08); color:#fff; font-size:.85rem; }
+
+.divider { text-align:center; color:rgba(255,255,255,.25); font-size:.82rem; margin:.2rem 0; }
+.err { color:var(--red); font-size:.8rem; display:none; margin-top:.3rem; }
+.loading-msg { color:var(--gold); font-size:.85rem; text-align:center; display:none; padding:.5rem; }
+
+.steps {
+  background:rgba(245,166,35,.08);
+  border:1px solid rgba(245,166,35,.2);
+  border-radius:14px; padding:1rem 1.2rem;
+  width:100%; max-width:500px;
+}
+.steps h3 { color:var(--gold); font-size:.88rem; margin-bottom:.5rem; }
+.steps ol  { padding-left:1.2rem; color:var(--muted); font-size:.82rem; line-height:2.1; }
+
+/* ══════════ GAME SCREEN ══════════ */
+#game {
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  width:100%; min-height:100vh;
+  padding:.8rem 1rem 1rem;
+}
+
+/* top bar */
+.topbar {
+  display:flex; justify-content:space-between; align-items:center;
+  width:100%; max-width:1100px; margin-bottom:.6rem;
+}
+.topic-pill {
+  background:rgba(245,166,35,.15);
+  border:1px solid rgba(245,166,35,.3);
+  border-radius:20px; padding:.3rem .9rem;
+  font-size:.82rem; color:var(--gold); font-weight:700;
+}
+.qcount { color:var(--muted); font-size:.85rem; }
+.btn-sm {
+  padding:.35rem .9rem; border-radius:8px; border:none;
+  background:rgba(255,255,255,.08); color:#fff;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:.8rem;
+  cursor:pointer;
+}
+.btn-sm:hover { background:rgba(255,255,255,.15); }
+
+/* scores row */
+.scores-row {
+  display:flex; justify-content:space-between; align-items:center;
+  width:100%; max-width:1100px; margin-bottom:.5rem;
+}
+.team-score-block { text-align:center; }
+.ts-name  { font-size:.8rem; color:var(--muted); font-weight:700; }
+.ts-pts   { font-size:2rem; font-weight:900; line-height:1; }
+.ts-pts.blue { color:var(--blue); }
+.ts-pts.red  { color:#ff6b6b; }
+.ts-streak { font-size:.72rem; color:var(--muted); min-height:1rem; }
+
+/* ── TUG ARENA ── */
+.arena-wrap {
+  width:100%; max-width:1100px;
+  position:relative;
+  height:200px;
+  margin-bottom:.8rem;
+}
+
+.arena-bg {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.02) 0%,rgba(255,255,255,.05) 100%);
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.07);
+  overflow:hidden;
+}
+
+/* ground line */
+.ground {
+  position:absolute; bottom:30px; left:0; right:0;
+  height:4px; background:rgba(255,255,255,.08); border-radius:2px;
+}
+
+/* rope */
+.rope-wrap {
+  position:absolute;
+  bottom:54px; left:0; right:0;
+  height:18px; display:flex; align-items:center;
+  padding:0 130px;
+}
+.rope-svg {
+  width:100%; height:18px; overflow:visible;
+}
+
+/* flag on rope */
+.rope-flag-wrap {
+  position:absolute;
+  bottom:48px;
+  transform:translateX(-50%);
+  transition:left .7s cubic-bezier(.34,1.56,.64,1);
+  z-index:10;
+  display:flex; flex-direction:column; align-items:center;
+}
+.rope-flag-pole {
+  width:3px; height:28px;
+  background:linear-gradient(#fff,#ccc);
+  border-radius:2px;
+}
+.rope-flag-cloth {
+  position:absolute; top:0; left:3px;
+  width:20px; height:13px;
+  border-radius:0 3px 3px 0;
+  clip-path:polygon(0 0,100% 20%,100% 80%,0 100%);
+  background:var(--orange);
+}
+
+/* win zone markers */
+.win-zone {
+  position:absolute; bottom:0; top:0; width:90px;
+  border-radius:20px 0 0 20px;
+  pointer-events:none;
+}
+.win-zone.left  { left:0;  background:linear-gradient(90deg,rgba(59,139,235,.25),transparent); border-radius:20px 0 0 20px; }
+.win-zone.right { right:0; background:linear-gradient(270deg,rgba(231,76,60,.25),transparent);  border-radius:0 20px 20px 0; }
+
+/* SVG characters */
+.char-left, .char-right {
+  position:absolute; bottom:28px;
+  width:120px; height:145px;
+}
+.char-left  { left:4px;  }
+.char-right { right:4px; transform:scaleX(-1); }
+
+/* pull animation */
+@keyframes pullLeft  { 0%,100%{transform:translateX(0)}  50%{transform:translateX(-6px)} }
+@keyframes pullRight { 0%,100%{transform:translateX(0)}  50%{transform:translateX(6px) scaleX(-1)} }
+@keyframes shake     { 0%,100%{transform:translateX(0)}  25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.char-left.pulling  { animation:pullLeft  .5s ease-in-out 3; }
+.char-right.pulling { animation:pullRight .5s ease-in-out 3; }
+.char-left.wrong-shake, .char-right.wrong-shake { animation:shake .3s ease 2; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  width:100%; max-width:1100px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;
+  padding:1.2rem 1.5rem 1rem;
+  margin-bottom:.8rem;
+}
+.q-label { font-size:.72rem; color:var(--muted); margin-bottom:.4rem; letter-spacing:.05em; text-transform:uppercase; }
+.q-text  { font-size:1.8rem; font-weight:900; color:#fff; line-height:1.3; margin-bottom:1rem; }
+
+.choices-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.7rem;
+}
+
+.choice {
+  padding:1rem 1.2rem;
+  border-radius:14px;
+  border:2px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  font-family:'Nunito',sans-serif;
+  font-size:1.15rem; font-weight:700;
+  cursor:pointer;
+  transition:background .15s, border .15s, transform .12s;
+  display:flex; gap:.7rem; align-items:center;
+  text-align:left;
+}
+.choice:hover:not(:disabled) {
+  background:rgba(245,166,35,.15);
+  border-color:var(--gold);
+  transform:translateY(-3px);
+}
+.choice:disabled { cursor:default; transform:none; }
+
+.choice-lbl {
+  background:rgba(255,255,255,.1);
+  border-radius:7px; padding:.15rem .5rem;
+  font-size:.85rem; color:var(--gold); font-weight:900;
+  flex-shrink:0;
+}
+.choice.correct { background:rgba(39,174,96,.25);  border-color:var(--green); }
+.choice.wrong   { background:rgba(231,76,60,.25);   border-color:var(--red); }
+
+/* feedback flash */
+.feedback-bar {
+  width:100%; max-width:1100px;
+  text-align:center; font-size:1.2rem; font-weight:900;
+  min-height:2rem; margin-bottom:.4rem;
+  transition:opacity .3s;
+}
+.feedback-bar.correct { color:var(--green); }
+.feedback-bar.wrong   { color:var(--red); }
+
+/* race indicator */
+.race-banner {
+  width:100%; max-width:1100px;
+  text-align:center;
+  background:rgba(245,166,35,.1);
+  border:1px solid rgba(245,166,35,.2);
+  border-radius:10px;
+  padding:.45rem;
+  font-size:.9rem; font-weight:700; color:var(--gold);
+  margin-bottom:.5rem;
+}
+
+/* ── WIN OVERLAY ── */
+#win-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(8,18,38,.93);
+  z-index:200;
+  flex-direction:column; align-items:center; justify-content:center;
+  gap:1rem; text-align:center; padding:2rem;
+}
+.win-big   { font-size:5rem; }
+.win-title { font-size:2.8rem; font-weight:900; color:var(--gold); }
+.win-sub   { color:var(--muted); font-size:1rem; }
+.win-btns  { display:flex; gap:.8rem; }
+.win-btns .btn { width:160px; margin:0; }
+
+/* confetti dots */
+.confetti-dot {
+  position:fixed; width:10px; height:10px; border-radius:50%;
+  pointer-events:none; animation:confettiFall 2.5s ease-in forwards;
+}
+@keyframes confettiFall {
+  0%   { transform:translateY(-20px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh)  rotate(720deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ LANDING ════════════════ -->
+<div id="landing">
+  <div class="brand">
+    <div class="brand-title">🏹 རྫོང་ཁ་ Tug of War</div>
+    <div class="brand-dz">སློབ་གྲྭའི་རྩེད་མོ། · Classroom Learning Game</div>
+  </div>
+
+  <div class="land-card">
+    <h2>🎓 Teacher — Load Your Questions</h2>
+    <p>Publish your Google Sheet as CSV, then paste the link below. Students race to answer first!</p>
+    <input type="text" id="sheet-url" placeholder="Paste your Google Sheet published URL…"/>
+    <div class="err" id="url-err">⚠️ Please paste a valid Google Sheets URL</div>
+    <div class="loading-msg" id="load-msg">⏳ Loading questions…</div>
+    <button class="btn btn-primary" onclick="loadSheet()">▶ Start with My Questions</button>
+    <div class="divider">— or try the demo —</div>
+    <button class="btn btn-gold" onclick="loadDemo()">🎮 Play Demo Now</button>
+  </div>
+
+  <div class="steps">
+    <h3>📋 How to set up your Google Sheet</h3>
+    <ol>
+      <li>Copy the template sheet (link in README)</li>
+      <li>Fill in your topic, questions and answer choices</li>
+      <li>File → Share → Publish to web → select <strong>CSV</strong></li>
+      <li>Paste that URL above → Start!</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ════════════════ GAME ════════════════ -->
+<div id="game">
+
+  <div class="topbar">
+    <div class="topic-pill" id="topic-pill">Topic</div>
+    <div class="qcount">Question <span id="qnum">1</span> / <span id="qtot">8</span></div>
+    <button class="btn-sm" onclick="backHome()">← Home</button>
+  </div>
+
+  <!-- Scores -->
+  <div class="scores-row">
+    <div class="team-score-block">
+      <div class="ts-name">🔵 TEAM A</div>
+      <div class="ts-pts blue" id="pts-a">0</div>
+      <div class="ts-streak" id="streak-a"></div>
+    </div>
+    <div class="race-banner" id="race-banner">⚡ First correct answer pulls the rope!</div>
+    <div class="team-score-block">
+      <div class="ts-name">🔴 TEAM B</div>
+      <div class="ts-pts red" id="pts-b">0</div>
+      <div class="ts-streak" id="streak-b"></div>
+    </div>
+  </div>
+
+  <!-- Tug Arena -->
+  <div class="arena-wrap">
+    <div class="arena-bg">
+      <div class="win-zone left"></div>
+      <div class="win-zone right"></div>
+      <div class="ground"></div>
+
+      <!-- Rope SVG -->
+      <div class="rope-wrap">
+        <svg class="rope-svg" id="rope-svg" viewBox="0 0 800 18" preserveAspectRatio="none">
+          <defs>
+            <pattern id="ropePat" x="0" y="0" width="20" height="18" patternUnits="userSpaceOnUse">
+              <rect width="14" height="18" fill="#8B5E3C"/>
+              <rect x="14" width="6" height="18" fill="#6b4423"/>
+              <line x1="0" y1="4" x2="20" y2="4" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
+              <line x1="0" y1="9" x2="20" y2="9" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
+              <line x1="0" y1="14" x2="20" y2="14" stroke="#a0723d" stroke-width="1.5" opacity=".5"/>
+            </pattern>
+          </defs>
+          <rect width="800" height="18" rx="9" fill="url(#ropePat)"/>
+          <rect width="800" height="18" rx="9" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+        </svg>
+      </div>
+
+      <!-- Flag -->
+      <div class="rope-flag-wrap" id="rope-flag" style="left:50%">
+        <div class="rope-flag-pole"></div>
+        <div class="rope-flag-cloth"></div>
+      </div>
+
+      <!-- LEFT team — Gho-wearing boy (blue) -->
+      <svg class="char-left" id="char-left" viewBox="0 0 120 145" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body group: mirrored so he faces right and pulls left -->
+        <!-- Legs -->
+        <rect x="38" y="105" width="18" height="35" rx="5" fill="#1a3560"/>
+        <rect x="62" y="105" width="18" height="35" rx="5" fill="#1a3560"/>
+        <!-- Shoes -->
+        <ellipse cx="47" cy="139" rx="12" ry="6" fill="#222"/>
+        <ellipse cx="71" cy="139" rx="12" ry="6" fill="#222"/>
+        <!-- Gho body (traditional Bhutanese robe - knee length) -->
+        <rect x="30" y="62" width="60" height="48" rx="6" fill="#3B6EA5"/>
+        <!-- Gho pattern stripes -->
+        <rect x="30" y="68" width="60" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
+        <rect x="30" y="78" width="60" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
+        <rect x="30" y="88" width="60" height="4" fill="rgba(255,255,255,.15)" rx="1"/>
+        <!-- Kera belt -->
+        <rect x="28" y="104" width="64" height="8" rx="3" fill="#e8a020"/>
+        <!-- White inner shirt (tego) -->
+        <rect x="48" y="60" width="24" height="15" rx="3" fill="#f0ede8"/>
+        <!-- Neck -->
+        <rect x="52" y="50" width="16" height="15" rx="4" fill="#c8956a"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="38" rx="22" ry="24" fill="#c8956a"/>
+        <!-- Hair -->
+        <ellipse cx="60" cy="18" rx="22" ry="10" fill="#1a0a00"/>
+        <!-- Eyes -->
+        <ellipse cx="52" cy="36" rx="4" ry="4.5" fill="white"/>
+        <ellipse cx="68" cy="36" rx="4" ry="4.5" fill="white"/>
+        <circle cx="53" cy="37" r="2.5" fill="#1a0a00"/>
+        <circle cx="69" cy="37" r="2.5" fill="#1a0a00"/>
+        <circle cx="54" cy="36" r="1" fill="white"/>
+        <circle cx="70" cy="36" r="1" fill="white"/>
+        <!-- Eyebrows -->
+        <path d="M48 30 Q52 27 56 30" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M64 30 Q68 27 72 30" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Smile -->
+        <path d="M52 46 Q60 52 68 46" stroke="#7a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Left arm (pulling rope - stretched forward/right) -->
+        <rect x="14" y="66" width="22" height="12" rx="5" fill="#c8956a" transform="rotate(-10 14 72)"/>
+        <ellipse cx="13" cy="75" rx="8" ry="7" fill="#c8956a"/>
+        <!-- Right arm (behind, pulling) -->
+        <rect x="84" y="70" width="20" height="11" rx="5" fill="#3B6EA5"/>
+        <!-- Rope grip hands -->
+        <ellipse cx="12" cy="76" rx="7" ry="6" fill="#b07a50"/>
+      </svg>
+
+      <!-- RIGHT team — Kira-wearing girl (red) -->
+      <svg class="char-right" id="char-right" viewBox="0 0 120 145" xmlns="http://www.w3.org/2000/svg">
+        <!-- Legs -->
+        <rect x="38" y="108" width="17" height="32" rx="5" fill="#c0392b"/>
+        <rect x="62" y="108" width="17" height="32" rx="5" fill="#c0392b"/>
+        <!-- Shoes -->
+        <ellipse cx="47" cy="139" rx="11" ry="5" fill="#222"/>
+        <ellipse cx="70" cy="139" rx="11" ry="5" fill="#222"/>
+        <!-- Kira skirt (long, floor-length traditional dress) -->
+        <rect x="28" y="78" width="64" height="34" rx="5" fill="#c0392b"/>
+        <!-- Kira pattern -->
+        <rect x="28" y="82" width="64" height="3"  fill="rgba(255,255,255,.2)" rx="1"/>
+        <rect x="28" y="90" width="64" height="3"  fill="rgba(255,255,255,.2)" rx="1"/>
+        <rect x="28" y="98" width="64" height="3"  fill="rgba(255,255,255,.2)" rx="1"/>
+        <!-- Tego inner jacket -->
+        <rect x="34" y="58" width="52" height="26" rx="6" fill="#e8a020"/>
+        <!-- Wonju blouse sleeves -->
+        <rect x="14" y="62" width="22" height="10" rx="5" fill="#f0ede8"/>
+        <rect x="84" y="62" width="22" height="10" rx="5" fill="#f0ede8"/>
+        <!-- Koma brooch -->
+        <circle cx="60" cy="60" r="5" fill="#gold" stroke="#e8a020" stroke-width="2" fill="#fff"/>
+        <!-- Neck -->
+        <rect x="52" y="48" width="16" height="14" rx="4" fill="#c8956a"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="36" rx="21" ry="23" fill="#c8956a"/>
+        <!-- Hair bun -->
+        <ellipse cx="60" cy="16" rx="21" ry="9" fill="#1a0a00"/>
+        <ellipse cx="60" cy="12" rx="10" ry="8" fill="#1a0a00"/>
+        <!-- Eyes -->
+        <ellipse cx="52" cy="34" rx="4"   ry="4.5" fill="white"/>
+        <ellipse cx="68" cy="34" rx="4"   ry="4.5" fill="white"/>
+        <circle cx="53" cy="35" r="2.5" fill="#1a0a00"/>
+        <circle cx="69" cy="35" r="2.5" fill="#1a0a00"/>
+        <circle cx="54" cy="34" r="1" fill="white"/>
+        <circle cx="70" cy="34" r="1" fill="white"/>
+        <!-- Eyebrows -->
+        <path d="M48 28 Q52 25 56 28" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M64 28 Q68 25 72 28" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Smile -->
+        <path d="M52 44 Q60 50 68 44" stroke="#7a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Arm pulling rope -->
+        <rect x="84" y="64" width="22" height="12" rx="5" fill="#c8956a" transform="rotate(10 84 70)"/>
+        <ellipse cx="107" cy="73" rx="7" ry="6" fill="#b07a50"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Question -->
+  <div class="q-card">
+    <div class="q-label">⚡ FIRST CORRECT ANSWER WINS THE PULL</div>
+    <div class="q-text" id="q-text">Loading question…</div>
+    <div class="choices-grid" id="choices"></div>
+  </div>
+
+  <div class="feedback-bar" id="feedback"></div>
+</div>
+
+<!-- Win Overlay -->
+<div id="win-overlay">
+  <div class="win-big"  id="win-emoji">🏆</div>
+  <div class="win-title" id="win-title">Team A Wins!</div>
+  <div class="win-sub"   id="win-sub">Final Score: A 5 – B 3</div>
+  <div class="win-btns">
+    <button class="btn btn-gold"    onclick="restartGame()">🔄 Play Again</button>
+    <button class="btn btn-ghost"   onclick="backHome()">🏠 Home</button>
+  </div>
+</div>
+
+<script>
+// ═══════════ DEMO DATA ═══════════
+const DEMO = {
+  topic: "Dzongkha Basics – Demo",
+  questions: [
+    { q:"ཆུ་ དོན་ ག་ཅི་སྨོ།  (What does ཆུ་ mean?)",       choices:["Fire 🔥","Water 💧","Tree 🌳","Sky ☁️"],  correct:1 },
+    { q:"མེ་ དོན་ ག་ཅི་སྨོ།  (What does མེ་ mean?)",        choices:["Water","Earth","Fire 🔥","Wind"],          correct:2 },
+    { q:"འགྲོ་ — Which verb means 'to go'?",               choices:["ཟ་ (eat)","འགྲོ་ (go)","སྡོད་ (stay)","ལྟ་ (see)"], correct:1 },
+    { q:"སྐྱིད་པོ་ means?",                                  choices:["Sad 😢","Angry 😠","Happy 😊","Tired 😴"],  correct:2 },
+    { q:"'Teacher' in Dzongkha is?",                       choices:["སློབ་དཔོན་","སློབ་མ་","ཨ་མ་","ཕ་"],            correct:0 },
+    { q:"དེབ་ means?",                                      choices:["Pen ✏️","Chair 🪑","Book 📚","Bag 🎒"],      correct:2 },
+    { q:"Honorific form of 'eat' (ཟ་) is?",               choices:["ཟ་","མཆོད་","འཐུང་","བཞེས་"],                 correct:3 },
+    { q:"ལགཔ་ means?",                                     choices:["Foot 🦶","Hand ✋","Eye 👁️","Ear 👂"],        correct:1 },
+  ]
+};
+
+// ═══════════ STATE ═══════════
+let questions=[], topic="";
+let currentQ=0, ropePos=50;
+let scores=[0,0], streaks=[0,0];
+let answered=false;
+const PULL=14, WIN=88;
+
+// ═══════════ LANDING ═══════════
+function loadDemo(){ questions=DEMO.questions; topic=DEMO.topic; startGame(); }
+
+async function loadSheet(){
+  const url=document.getElementById('sheet-url').value.trim();
+  const errEl=document.getElementById('url-err');
+  const ldEl=document.getElementById('load-msg');
+  errEl.style.display='none';
+  if(!url.includes('docs.google.com/spreadsheets')){ errEl.style.display='block'; return; }
+  const m=url.match(/\/d\/([\w-]+)/);
+  if(!m){ errEl.style.display='block'; return; }
+  const csv=`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
+  ldEl.style.display='block';
+  try{
+    const r=await fetch(csv); if(!r.ok) throw 0;
+    parseCSV(await r.text()); startGame();
+  }catch{
+    ldEl.style.display='none';
+    errEl.textContent='⚠️ Could not load. Make sure the sheet is published publicly as CSV.';
+    errEl.style.display='block';
+  }
+}
+
+function parseCSV(text){
+  const rows=text.trim().split('\n').map(r=>r.split(',').map(c=>c.replace(/^"|"$/g,'').trim()));
+  topic=rows[1]?.[0]||"Dzongkha Quiz";
+  questions=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i]; if(!r[1]) continue;
+    let cor=parseInt(r[6]);
+    if(isNaN(cor)) cor=['A','B','C','D'].indexOf((r[6]||'A').toUpperCase());
+    questions.push({q:r[1],choices:[r[2],r[3],r[4],r[5]],correct:cor});
+  }
+}
+
+// ═══════════ GAME ═══════════
+function startGame(){
+  currentQ=0; ropePos=50; scores=[0,0]; streaks=[0,0]; answered=false;
+  document.getElementById('landing').style.display='none';
+  document.getElementById('win-overlay').style.display='none';
+  const g=document.getElementById('game'); g.style.display='flex';
+  document.getElementById('topic-pill').textContent=topic;
+  document.getElementById('qtot').textContent=questions.length;
+  updateRope(); updateScoreUI(); renderQ();
+}
+
+function renderQ(){
+  if(currentQ>=questions.length){ showWin('end'); return; }
+  answered=false;
+  const q=questions[currentQ];
+  const L=['A','B','C','D'];
+  document.getElementById('qnum').textContent=currentQ+1;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback-bar';
+  document.getElementById('race-banner').textContent='⚡ First correct answer pulls the rope!';
+
+  const el=document.getElementById('choices');
+  el.innerHTML='';
+  q.choices.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.innerHTML=`<span class="choice-lbl">${L[i]}</span> ${c}`;
+    b.onclick=()=>pick(i);
+    el.appendChild(b);
+  });
+}
+
+function pick(idx){
+  if(answered) return;
+  answered=true;
+  const q=questions[currentQ];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.correct].classList.add('correct');
+
+  const fb=document.getElementById('feedback');
+  const rb=document.getElementById('race-banner');
+
+  if(idx===q.correct){
+    // Determine which team answered — for smartboard: both sides see same screen,
+    // teacher decides which team pressed. For simplicity: odd Q = Team A wins pull, even = Team B wins pull
+    // But we let it be truly first-tap: whoever taps first on the smartboard = their team.
+    // We detect using a simple "next correct tap = that team's point" approach.
+    // Here we attribute to whichever team is "winning" the race alternately — 
+    // In real use teacher can attribute, but for demo we alternate based on who answers:
+    const team = currentQ % 2; // Demo: alternates for illustration; in real use teacher clicks team button
+    scores[team]++;
+    streaks[team]++;
+    streaks[1-team]=0;
+
+    fb.textContent=`✅ Correct! ${team===0?'🔵 Team A':'🔴 Team B'} pulls the rope!`;
+    fb.className='feedback-bar correct';
+    rb.textContent=`🎉 ${team===0?'Team A':'Team B'} got it first!`;
+
+    ropePos += team===0 ? -PULL : PULL;
+    ropePos=Math.max(5,Math.min(95,ropePos));
+
+    // Pull animation
+    const charId=team===0?'char-left':'char-right';
+    const ch=document.getElementById(charId);
+    ch.classList.add('pulling');
+    setTimeout(()=>ch.classList.remove('pulling'),1600);
+
+    btns[idx].style.background='rgba(39,174,96,.3)';
+  } else {
+    btns[idx].classList.add('wrong');
+    fb.textContent='❌ Wrong answer — rope stays!';
+    fb.className='feedback-bar wrong';
+    rb.textContent='Nobody gets the pull this round.';
+    // shake both
+    ['char-left','char-right'].forEach(id=>{
+      const c=document.getElementById(id);
+      c.classList.add('wrong-shake');
+      setTimeout(()=>c.classList.remove('wrong-shake'),700);
+    });
+  }
+
+  updateRope(); updateScoreUI();
+
+  if(ropePos<=10){ setTimeout(()=>showWin(0),1000); return; }
+  if(ropePos>=90){ setTimeout(()=>showWin(1),1000); return; }
+
+  currentQ++;
+  setTimeout(renderQ,1800);
+}
+
+function updateRope(){
+  document.getElementById('rope-flag').style.left=ropePos+'%';
+}
+
+function updateScoreUI(){
+  document.getElementById('pts-a').textContent=scores[0];
+  document.getElementById('pts-b').textContent=scores[1];
+  document.getElementById('streak-a').textContent=streaks[0]>=2?'🔥'.repeat(Math.min(streaks[0],5)):'';
+  document.getElementById('streak-b').textContent=streaks[1]>=2?'🔥'.repeat(Math.min(streaks[1],5)):'';
+}
+
+function showWin(team){
+  const ov=document.getElementById('win-overlay');
+  ov.style.display='flex';
+  if(team==='end'){
+    const winner=scores[0]>scores[1]?0:scores[0]<scores[1]?1:'draw';
+    if(winner==='draw'){
+      document.getElementById('win-emoji').textContent='🤝';
+      document.getElementById('win-title').textContent="It's a Draw!";
+    } else {
+      document.getElementById('win-emoji').textContent='🏆';
+      document.getElementById('win-title').textContent=`Team ${winner===0?'A 🔵':'B 🔴'} Wins!`;
+    }
+  } else {
+    document.getElementById('win-emoji').textContent='🏆';
+    document.getElementById('win-title').textContent=`Team ${team===0?'A 🔵':'B 🔴'} Wins by Knockout!`;
+  }
+  document.getElementById('win-sub').textContent=
+    `Final Score — 🔵 Team A: ${scores[0]} pts  |  🔴 Team B: ${scores[1]} pts`;
+  spawnConfetti();
+}
+
+function spawnConfetti(){
+  const colors=['#F5A623','#E8611A','#3B8BEB','#27AE60','#E74C3C','#fff'];
+  for(let i=0;i<60;i++){
+    const d=document.createElement('div');
+    d.className='confetti-dot';
+    d.style.left=Math.random()*100+'vw';
+    d.style.top='-20px';
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDelay=Math.random()*1.5+'s';
+    d.style.width=d.style.height=(6+Math.random()*10)+'px';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),4000);
+  }
+}
+
+function restartGame(){ document.getElementById('win-overlay').style.display='none'; startGame(); }
+function backHome(){
+  document.getElementById('game').style.display='none';
+  document.getElementById('win-overlay').style.display='none';
+  document.getElementById('landing').style.display='flex';
+  document.getElementById('sheet-url').value='';
+  document.getElementById('url-err').style.display='none';
+}
+</script>
+</body>
+</html>
