@@ -2,16 +2,16 @@
    CUSTOM FONT
 ══════════════════════════════════════ */
 @font-face {
-  font-family: 'ThinwangT_Joyig';
-  src: url('ThinwangT_Joyig.ttf') format('truetype'),
-       url('fonts/ThinwangT_Joyig.ttf') format('truetype'),
+  font-family: 'CustomFont';
+  src: url('fonts/CustomFont.ttf') format('truetype'),
+       url('fonts/CustomFont.woff2') format('woff2'),
        url('fonts/CustomFont.woff')  format('woff');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'ThinwangT_Joyig';
-  src: url('fonts/ThinwangT_Joyig.ttf') format('truetype'),
+  font-family: 'CustomFont';
+  src: url('fonts/CustomFont-Bold.ttf') format('truetype'),
        url('fonts/CustomFont-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
@@ -19,7 +19,7 @@
 
 /* ── NIGHT MODE (default) ── */
 :root {
-  --font: 'ThinwangT_Joyig', 'Jomolhari', 'Noto Serif Tibetan', 'Arial Unicode MS', sans-serif;
+  --font: 'CustomFont', 'Jomolhari', 'Noto Serif Tibetan', 'Arial Unicode MS', sans-serif;
   --gold:#F5A623; --orange:#E8611A; --blue:#3B8BEB; --red:#E74C3C;
   --green:#27AE60; --white:#fff; --muted:#7a9cc4;
 
@@ -177,7 +177,7 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 /* ── TUG ARENA ── */
 .arena{
   position:relative;
-  height:210px;
+  height:220px;
   border-radius:18px;
   background:var(--arena-bg);
   border:1px solid var(--arena-border);
@@ -192,7 +192,7 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 }
 .rope-svg{
   position:absolute;
-  bottom:70px;
+  bottom:80px;
   left:0; right:0;
   width:100%;
   height:12px;
@@ -200,7 +200,7 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 }
 .rope-flag{
   position:absolute;
-  bottom:62px;
+  bottom:72px;
   transform:translateX(-50%);
   transition:left .7s cubic-bezier(.34,1.56,.64,1);
   z-index:20;
@@ -217,243 +217,6 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 .win-zone{position:absolute;top:0;bottom:0;width:80px;pointer-events:none;}
 .win-zone.l{left:0;background:linear-gradient(90deg,rgba(59,139,235,.3),transparent);border-radius:18px 0 0 18px;}
 .win-zone.r{right:0;background:linear-gradient(270deg,rgba(231,76,60,.3),transparent);border-radius:0 18px 18px 0;}
-
-/* ── TEAM PLAYER GROUPS ── */
-.team-players{
-  position:absolute;
-  bottom:28px;
-  display:flex;
-  align-items:flex-end;
-  gap:4px;
-  z-index:10;
-}
-.team-players.left{
-  left:4px;
-  flex-direction:row;
-  transition: transform .65s cubic-bezier(.34,1.2,.64,1);
-}
-.team-players.right{
-  right:4px;
-  flex-direction:row-reverse;
-  transform:scaleX(-1);
-  transition: transform .65s cubic-bezier(.34,1.2,.64,1);
-}
-
-.player-wrap{
-  width:80px;
-  height:130px;
-  flex-shrink:0;
-}
-.player-svg{ width:100%; height:100%; overflow:visible; }
-
-/* ══════════════════════════════════════
-   PLAYER ANIMATIONS
-══════════════════════════════════════ */
-
-/* ── IDLE: gentle lean-back pull stance with leg walk cycle ── */
-@keyframes idle-lean{
-  0%,100%{ transform:rotate(-12deg) translateY(0); }
-  50%    { transform:rotate(-14deg) translateY(-2px); }
-}
-@keyframes idle-leg-b{
-  0%,100%{ transform:rotate(-8deg); }
-  50%    { transform:rotate(14deg); }
-}
-@keyframes idle-leg-f{
-  0%,100%{ transform:rotate(14deg); }
-  50%    { transform:rotate(-8deg); }
-}
-@keyframes idle-arm-b{
-  0%,100%{ transform:rotate(20deg); }
-  50%    { transform:rotate(30deg); }
-}
-@keyframes idle-arm-f{
-  0%,100%{ transform:rotate(-10deg); }
-  50%    { transform:rotate(-20deg); }
-}
-@keyframes idle-head{
-  0%,100%{ transform:rotate(8deg); }
-  50%    { transform:rotate(6deg); }
-}
-
-/* apply idle to all players by default */
-.player-wrap .p-body  { transform-origin:40px 65px; animation:idle-lean  1.1s ease-in-out infinite; }
-.player-wrap .p-head  { transform-origin:40px 36px; animation:idle-head  1.1s ease-in-out infinite; }
-.player-wrap .p-leg-b { transform-origin:36px 82px; animation:idle-leg-b 1.1s ease-in-out infinite; }
-.player-wrap .p-leg-f { transform-origin:49px 82px; animation:idle-leg-f 1.1s ease-in-out infinite; }
-.player-wrap .p-arm-b { transform-origin:59px 52px; animation:idle-arm-b 1.1s ease-in-out infinite; }
-.player-wrap .p-arm-f { transform-origin:21px 52px; animation:idle-arm-f 1.1s ease-in-out infinite; }
-
-/* stagger p2 so the two players look independent */
-#pa2 .p-body, #pa2 .p-head,
-#pa2 .p-leg-b, #pa2 .p-leg-f,
-#pa2 .p-arm-b, #pa2 .p-arm-f { animation-delay:.55s; }
-
-#pb2 .p-body, #pb2 .p-head,
-#pb2 .p-leg-b, #pb2 .p-leg-f,
-#pb2 .p-arm-b, #pb2 .p-arm-f { animation-delay:.55s; }
-
-/* ── PULL: hard lean, arms wrench, legs dig in ── */
-@keyframes pull-lean{
-  0%      { transform:rotate(-12deg); }
-  25%     { transform:rotate(-26deg) translateX(8px); }
-  60%     { transform:rotate(-28deg) translateX(10px); }
-  80%     { transform:rotate(-20deg) translateX(4px); }
-  100%    { transform:rotate(-12deg); }
-}
-@keyframes pull-leg-b{
-  0%,100% { transform:rotate(-8deg); }
-  40%     { transform:rotate(-22deg); }
-}
-@keyframes pull-leg-f{
-  0%,100% { transform:rotate(14deg); }
-  40%     { transform:rotate(26deg); }
-}
-@keyframes pull-arm-b{
-  0%,100% { transform:rotate(20deg); }
-  35%     { transform:rotate(50deg); }
-}
-@keyframes pull-arm-f{
-  0%,100% { transform:rotate(-10deg); }
-  35%     { transform:rotate(-35deg); }
-}
-@keyframes pull-head{
-  0%,100% { transform:rotate(8deg); }
-  40%     { transform:rotate(18deg); }
-}
-@keyframes sweat-pop{
-  0%,55%  { opacity:0; transform:scale(0) translateY(0); }
-  70%     { opacity:1; transform:scale(1.3) translateY(-3px); }
-  100%    { opacity:0; transform:scale(.8) translateY(-8px); }
-}
-
-.team-players.pulling .p-body  { animation:pull-lean  .55s ease-in-out 3 !important; }
-.team-players.pulling .p-head  { animation:pull-head  .55s ease-in-out 3 !important; }
-.team-players.pulling .p-leg-b { animation:pull-leg-b .55s ease-in-out 3 !important; }
-.team-players.pulling .p-leg-f { animation:pull-leg-f .55s ease-in-out 3 !important; }
-.team-players.pulling .p-arm-b { animation:pull-arm-b .55s ease-in-out 3 !important; }
-.team-players.pulling .p-arm-f { animation:pull-arm-f .55s ease-in-out 3 !important; }
-.team-players.pulling .p-sweat { animation:sweat-pop  .55s ease-in-out 3 !important; }
-#pa2.player-wrap .p-body,
-#pb2.player-wrap .p-body { /* keep stagger during pull too */ }
-
-/* ── WRONG: shake and stumble forward ── */
-@keyframes wrong-lean{
-  0%      { transform:rotate(-12deg); }
-  20%     { transform:rotate(4deg) translateX(8px); }
-  40%     { transform:rotate(-8deg) translateX(-4px); }
-  60%     { transform:rotate(2deg) translateX(6px); }
-  80%     { transform:rotate(-5deg) translateX(-2px); }
-  100%    { transform:rotate(-12deg); }
-}
-@keyframes wrong-head{
-  0%,100% { transform:rotate(8deg); }
-  30%     { transform:rotate(-10deg); }
-  70%     { transform:rotate(14deg); }
-}
-.team-players.wrong .p-body { animation:wrong-lean .5s ease 2 !important; }
-.team-players.wrong .p-head { animation:wrong-head .5s ease 2 !important; }
-
-/* ── CELEBRATE: big continuous jump, arms waving ── */
-@keyframes cel-jump{
-  0%        { transform:translateY(0) scaleY(1); }
-  10%       { transform:translateY(0) scaleY(.88); }   /* squash before jump */
-  30%       { transform:translateY(-42px) scaleY(1.08); } /* peak air */
-  50%       { transform:translateY(-48px) scaleY(1.05); } /* hang */
-  70%       { transform:translateY(-18px) scaleY(1); }
-  88%       { transform:translateY(0) scaleY(.9); }    /* land squash */
-  100%      { transform:translateY(0) scaleY(1); }
-}
-@keyframes cel-body{
-  0%,100%   { transform:rotate(-12deg); }
-  35%,65%   { transform:rotate(4deg); }
-}
-@keyframes cel-arm-b{
-  0%,100%   { transform:rotate(20deg); }
-  30%,60%   { transform:rotate(-140deg); }  /* arms shoot straight up */
-}
-@keyframes cel-arm-f{
-  0%,100%   { transform:rotate(-10deg); }
-  30%,60%   { transform:rotate(140deg); }
-}
-@keyframes cel-leg-b{
-  0%,100%   { transform:rotate(0deg); }
-  25%       { transform:rotate(-30deg); }
-  60%       { transform:rotate(20deg); }
-}
-@keyframes cel-leg-f{
-  0%,100%   { transform:rotate(0deg); }
-  25%       { transform:rotate(30deg); }
-  60%       { transform:rotate(-20deg); }
-}
-@keyframes cel-shadow{
-  0%,88%,100% { transform:scaleX(1);   opacity:.15; }
-  30%,60%     { transform:scaleX(.35); opacity:.05; }
-}
-@keyframes cel-head{
-  0%,100%   { transform:rotate(8deg); }
-  35%,65%   { transform:rotate(-14deg); }
-}
-
-/* infinite = keeps going until class is removed */
-.team-players.celebrating .player-wrap { animation:cel-jump   .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-body      { animation:cel-body   .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-head      { animation:cel-head   .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-arm-b     { animation:cel-arm-b  .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-arm-f     { animation:cel-arm-f  .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-leg-b     { animation:cel-leg-b  .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-leg-f     { animation:cel-leg-f  .65s ease-in-out infinite !important; }
-.team-players.celebrating .p-shadow    { animation:cel-shadow .65s ease-in-out infinite !important; }
-
-/* stagger p2 for natural look */
-.team-players.celebrating #pa2 .player-wrap,
-.team-players.celebrating #pa2 .p-body,
-.team-players.celebrating #pa2 .p-head,
-.team-players.celebrating #pa2 .p-arm-b,
-.team-players.celebrating #pa2 .p-arm-f,
-.team-players.celebrating #pa2 .p-leg-b,
-.team-players.celebrating #pa2 .p-leg-f,
-.team-players.celebrating #pb2 .player-wrap,
-.team-players.celebrating #pb2 .p-body,
-.team-players.celebrating #pb2 .p-head,
-.team-players.celebrating #pb2 .p-arm-b,
-.team-players.celebrating #pb2 .p-arm-f,
-.team-players.celebrating #pb2 .p-leg-b,
-.team-players.celebrating #pb2 .p-leg-f { animation-delay:.32s !important; }
-
-/* ── SAD: slow slump down, head hangs, stays in position ── */
-@keyframes sad-slump{
-  0%    { transform:rotate(-12deg) translateY(0); }
-  100%  { transform:rotate(14deg) translateY(14px); }
-}
-@keyframes sad-head{
-  0%    { transform:rotate(8deg); }
-  100%  { transform:rotate(35deg); }
-}
-@keyframes sad-arm-b{
-  0%    { transform:rotate(20deg); }
-  100%  { transform:rotate(55deg); }
-}
-@keyframes sad-arm-f{
-  0%    { transform:rotate(-10deg); }
-  100%  { transform:rotate(-50deg); }
-}
-@keyframes sad-leg-b{
-  0%    { transform:rotate(-8deg); }
-  100%  { transform:rotate(10deg); }
-}
-@keyframes sad-leg-f{
-  0%    { transform:rotate(14deg); }
-  100%  { transform:rotate(5deg); }
-}
-
-/* runs once, stays at final frame (forwards) */
-.team-players.sad .p-body  { animation:sad-slump  .9s ease-out 1 forwards !important; }
-.team-players.sad .p-head  { animation:sad-head   .9s ease-out 1 forwards !important; }
-.team-players.sad .p-arm-b { animation:sad-arm-b  .9s ease-out 1 forwards !important; }
-.team-players.sad .p-arm-f { animation:sad-arm-f  .9s ease-out 1 forwards !important; }
-.team-players.sad .p-leg-b { animation:sad-leg-b  .9s ease-out 1 forwards !important; }
-.team-players.sad .p-leg-f { animation:sad-leg-f  .9s ease-out 1 forwards !important; }
 
 /* ── 3-COLUMN LAYOUT ── */
 /* ── 3-COLUMN LAYOUT ── */
