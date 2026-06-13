@@ -1,0 +1,250 @@
+/* ══════════════════════════════════════
+   CHARACTER ANIMATIONS
+   Matching reference image style:
+   - Big round head, white traditional hat
+   - Chunky body leaning back
+   - Long arms reaching forward
+   - Legs in wide walking stride
+══════════════════════════════════════ */
+
+.team-players {
+  position: absolute;
+  bottom: 38px;
+  display: flex;
+  align-items: flex-end;
+  z-index: 10;
+  transition: transform .65s cubic-bezier(.34,1.2,.64,1);
+}
+.team-players.left  { left: 2px;  flex-direction: row; }
+.team-players.right { right: 2px; flex-direction: row-reverse; transform: scaleX(-1); }
+
+.player-wrap { width: 96px; height: 155px; flex-shrink: 0; position: relative; }
+.player-svg  { width: 100%; height: 100%; overflow: visible; }
+
+/* ─────────────────────────────────────
+   IDLE WALK CYCLE
+   Body leans back, legs alternate stepping,
+   arms pump in opposition — exactly like reference
+───────────────────────────────────── */
+
+/* Whole body lean back + subtle bounce */
+@keyframes root-lean {
+  0%,100% { transform: rotate(-20deg) translateY(0); }
+  50%     { transform: rotate(-22deg) translateY(-3px); }
+}
+
+/* BACK LEG: thigh swings back → forward */
+@keyframes leg-b {
+  0%     { transform: rotate(-25deg); }
+  25%    { transform: rotate(-40deg); }
+  50%    { transform: rotate(-20deg); }
+  75%    { transform: rotate(0deg);   }
+  100%   { transform: rotate(-25deg); }
+}
+@keyframes shin-b {
+  0%     { transform: rotate(15deg);  }
+  25%    { transform: rotate(35deg);  }
+  50%    { transform: rotate(10deg);  }
+  75%    { transform: rotate(5deg);   }
+  100%   { transform: rotate(15deg);  }
+}
+
+/* FRONT LEG: opposite phase to back leg */
+@keyframes leg-f {
+  0%     { transform: rotate(0deg);   }
+  25%    { transform: rotate(18deg);  }
+  50%    { transform: rotate(28deg);  }
+  75%    { transform: rotate(12deg);  }
+  100%   { transform: rotate(0deg);   }
+}
+@keyframes shin-f {
+  0%     { transform: rotate(8deg);   }
+  25%    { transform: rotate(5deg);   }
+  50%    { transform: rotate(22deg);  }
+  75%    { transform: rotate(12deg);  }
+  100%   { transform: rotate(8deg);   }
+}
+
+/* BACK ARM: reaches forward gripping rope */
+@keyframes arm-b {
+  0%,100% { transform: rotate(45deg);  }
+  50%     { transform: rotate(35deg);  }
+}
+@keyframes forearm-b {
+  0%,100% { transform: rotate(-15deg); }
+  50%     { transform: rotate(-5deg);  }
+}
+
+/* FRONT ARM: braces behind */
+@keyframes arm-f {
+  0%,100% { transform: rotate(-25deg); }
+  50%     { transform: rotate(-35deg); }
+}
+@keyframes forearm-f {
+  0%,100% { transform: rotate(12deg);  }
+  50%     { transform: rotate(22deg);  }
+}
+
+/* HEAD: slight nod of effort */
+@keyframes head-nod {
+  0%,100% { transform: rotate(10deg);  }
+  50%     { transform: rotate(14deg);  }
+}
+
+/* Apply to all players */
+.player-wrap .p-root      { transform-origin: 50px 150px; animation: root-lean .85s ease-in-out infinite; }
+.player-wrap .p-leg-b     { transform-origin: 42px 100px; animation: leg-b     .85s ease-in-out infinite; }
+.player-wrap .p-shin-b    { transform-origin: 42px 128px; animation: shin-b    .85s ease-in-out infinite; }
+.player-wrap .p-leg-f     { transform-origin: 56px 100px; animation: leg-f     .85s ease-in-out infinite; }
+.player-wrap .p-shin-f    { transform-origin: 57px 128px; animation: shin-f    .85s ease-in-out infinite; }
+.player-wrap .p-arm-b     { transform-origin: 74px 68px;  animation: arm-b     .85s ease-in-out infinite; }
+.player-wrap .p-forearm-b { transform-origin: 76px 94px;  animation: forearm-b .85s ease-in-out infinite; }
+.player-wrap .p-arm-f     { transform-origin: 26px 68px;  animation: arm-f     .85s ease-in-out infinite; }
+.player-wrap .p-forearm-f { transform-origin: 24px 94px;  animation: forearm-f .85s ease-in-out infinite; }
+.player-wrap .p-head      { transform-origin: 50px 42px;  animation: head-nod  .85s ease-in-out infinite; }
+
+/* Player 2 offset — looks independent */
+#pa2 .p-root, #pa2 .p-leg-b, #pa2 .p-shin-b, #pa2 .p-leg-f, #pa2 .p-shin-f,
+#pa2 .p-arm-b, #pa2 .p-forearm-b, #pa2 .p-arm-f, #pa2 .p-forearm-f, #pa2 .p-head,
+#pb2 .p-root, #pb2 .p-leg-b, #pb2 .p-shin-b, #pb2 .p-leg-f, #pb2 .p-shin-f,
+#pb2 .p-arm-b, #pb2 .p-forearm-b, #pb2 .p-arm-f, #pb2 .p-forearm-f, #pb2 .p-head {
+  animation-delay: -0.425s;
+}
+
+/* ─────────────────────────────────────
+   PULLING — hard yank on correct answer
+───────────────────────────────────── */
+@keyframes pull-root {
+  0%      { transform: rotate(-20deg) translateX(0); }
+  20%     { transform: rotate(-36deg) translateX(12px); }
+  55%     { transform: rotate(-40deg) translateX(16px); }
+  80%     { transform: rotate(-28deg) translateX(6px); }
+  100%    { transform: rotate(-20deg) translateX(0); }
+}
+@keyframes pull-leg-b {
+  0%,100% { transform: rotate(-25deg); }
+  45%     { transform: rotate(-50deg); }
+}
+@keyframes pull-leg-f {
+  0%,100% { transform: rotate(0deg);   }
+  45%     { transform: rotate(32deg);  }
+}
+@keyframes pull-arm-b {
+  0%,100% { transform: rotate(45deg);  }
+  40%     { transform: rotate(70deg);  }
+}
+@keyframes sweat-pop {
+  0%,50%  { opacity:0; transform:scale(0) translateY(0); }
+  70%     { opacity:1; transform:scale(1.4) translateY(-5px); }
+  100%    { opacity:0; transform:scale(.8) translateY(-12px); }
+}
+
+.team-players.pulling .p-root   { animation: pull-root  .55s ease-in-out 3 !important; }
+.team-players.pulling .p-leg-b  { animation: pull-leg-b .55s ease-in-out 3 !important; }
+.team-players.pulling .p-leg-f  { animation: pull-leg-f .55s ease-in-out 3 !important; }
+.team-players.pulling .p-arm-b  { animation: pull-arm-b .55s ease-in-out 3 !important; }
+.team-players.pulling .p-sweat  { animation: sweat-pop  .55s ease-in-out 3 !important; }
+
+/* ─────────────────────────────────────
+   WRONG — stumble forward
+───────────────────────────────────── */
+@keyframes stumble {
+  0%      { transform: rotate(-20deg) translateX(0); }
+  25%     { transform: rotate(8deg)   translateX(12px); }
+  55%     { transform: rotate(-12deg) translateX(-5px); }
+  80%     { transform: rotate(4deg)   translateX(7px); }
+  100%    { transform: rotate(-20deg) translateX(0); }
+}
+.team-players.wrong .p-root { animation: stumble .45s ease 2 !important; }
+
+/* ─────────────────────────────────────
+   CELEBRATE — big jump, arms up, INFINITE
+───────────────────────────────────── */
+@keyframes cel-root {
+  0%      { transform: rotate(-20deg) translateY(0)    scaleY(1);    }
+  10%     { transform: rotate(-20deg) translateY(0)    scaleY(.85);  }
+  28%     { transform: rotate(0deg)   translateY(-48px) scaleY(1.08); }
+  50%     { transform: rotate(0deg)   translateY(-54px) scaleY(1.05); }
+  68%     { transform: rotate(0deg)   translateY(-22px) scaleY(1);   }
+  87%     { transform: rotate(-20deg) translateY(0)    scaleY(.88);  }
+  100%    { transform: rotate(-20deg) translateY(0)    scaleY(1);    }
+}
+@keyframes cel-arm-b {
+  0%,100% { transform: rotate(45deg);  }
+  30%,60% { transform: rotate(-150deg);}
+}
+@keyframes cel-arm-f {
+  0%,100% { transform: rotate(-25deg); }
+  30%,60% { transform: rotate(150deg); }
+}
+@keyframes cel-forearm {
+  0%,100% { transform: rotate(0deg); }
+  30%,60% { transform: rotate(0deg); }
+}
+@keyframes cel-leg-b {
+  0%,100% { transform: rotate(-25deg); }
+  35%     { transform: rotate(-40deg); }
+  65%     { transform: rotate(15deg);  }
+}
+@keyframes cel-leg-f {
+  0%,100% { transform: rotate(0deg);   }
+  35%     { transform: rotate(30deg);  }
+  65%     { transform: rotate(-20deg); }
+}
+@keyframes cel-head {
+  0%,100% { transform: rotate(10deg);  }
+  40%,60% { transform: rotate(-18deg); }
+}
+@keyframes cel-shadow {
+  0%,87%,100% { transform:scaleX(1);  opacity:.2;  }
+  35%,55%     { transform:scaleX(.3); opacity:.06; }
+}
+
+.team-players.celebrating .p-root      { animation: cel-root    .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-arm-b     { animation: cel-arm-b   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-arm-f     { animation: cel-arm-f   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-forearm-b { animation: cel-forearm .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-forearm-f { animation: cel-forearm .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-leg-b     { animation: cel-leg-b   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-leg-f     { animation: cel-leg-f   .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-head      { animation: cel-head    .65s ease-in-out infinite !important; }
+.team-players.celebrating .p-shadow    { animation: cel-shadow  .65s ease-in-out infinite !important; }
+
+/* stagger player 2 */
+.team-players.celebrating #pa2 .p-root,
+.team-players.celebrating #pa2 .p-arm-b, .team-players.celebrating #pa2 .p-arm-f,
+.team-players.celebrating #pa2 .p-leg-b, .team-players.celebrating #pa2 .p-leg-f,
+.team-players.celebrating #pa2 .p-head,
+.team-players.celebrating #pb2 .p-root,
+.team-players.celebrating #pb2 .p-arm-b, .team-players.celebrating #pb2 .p-arm-f,
+.team-players.celebrating #pb2 .p-leg-b, .team-players.celebrating #pb2 .p-leg-f,
+.team-players.celebrating #pb2 .p-head { animation-delay: .32s !important; }
+
+/* ─────────────────────────────────────
+   SAD — slump forward, stay slumped
+───────────────────────────────────── */
+@keyframes sad-root {
+  0%   { transform: rotate(-20deg) translateY(0); }
+  100% { transform: rotate(18deg)  translateY(14px); }
+}
+@keyframes sad-head {
+  0%   { transform: rotate(10deg); }
+  100% { transform: rotate(42deg); }
+}
+@keyframes sad-arm-b {
+  0%   { transform: rotate(45deg); }
+  100% { transform: rotate(72deg); }
+}
+@keyframes sad-arm-f {
+  0%   { transform: rotate(-25deg); }
+  100% { transform: rotate(-62deg); }
+}
+
+.team-players.sad .p-root  { animation: sad-root  .85s ease-out 1 forwards !important; }
+.team-players.sad .p-head  { animation: sad-head  .85s ease-out 1 forwards !important; }
+.team-players.sad .p-arm-b { animation: sad-arm-b .85s ease-out 1 forwards !important; }
+.team-players.sad .p-arm-f { animation: sad-arm-f .85s ease-out 1 forwards !important; }
+.team-players.sad .p-leg-b { animation: none !important; transform: rotate(-15deg); }
+.team-players.sad .p-leg-f { animation: none !important; transform: rotate(12deg);  }
+.team-players.sad .p-shin-b,
+.team-players.sad .p-shin-f { animation: none !important; transform: rotate(8deg); }
