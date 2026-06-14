@@ -1,6 +1,4 @@
-// ══════════════════════════════════════
-//  SOUND ENGINE
-// ══════════════════════════════════════
+// SOUND ENGINE
 let audioCtx=null,soundOn=true,bgMusicNode=null,bgGainNode=null,bgCustomNode=null;
 const customAudio={bg:null,correct:null,wrong:null,pull:null,win:null,newq:null};
 
@@ -94,34 +92,29 @@ function playWinFanfare(){
   setTimeout(()=>{ for(let i=0;i<6;i++) setTimeout(()=>playPull(),i*80); },melody.length*180);
 }
 
-// ══════════════════════════════════════
-//  DEMO DATA
-// ══════════════════════════════════════
+// DEMO DATA
 const DEMO={
   topic:"Dzongkha Basics – Demo",
   questions:[
-    {q:"ཆུ་ འདི་་ལུ་ ཨིང་སྐད་ནང་ག་ཅི་སློབ་སྨོ?",choices:["Fire 🔥","Water 💧","Tree 🌳","Sky ☁️"],correct:1},
-    {q:"མེ་ འདི་ལུ་ ཨིང་སྐད་ནང་ག་ཅི་སླབ་སྨོ?",choices:["Water","Earth","Fire 🔥","Wind"],correct:2},
-    {q:"Which verb means 'to go'?",choices:["ཟ་ (eat)","འགྲོ་ (go)","སྡོད་ (stay)","ལྟ་ (see)"],correct:1},
-    {q:"དགའ་ཏོག་ཏོ་ means?",choices:["Sad 😢","Angry 😠","Happy 😊","Tired 😴"],correct:2},
-    {q:"'Teacher' in Dzongkha?",choices:["སློབ་དཔོན་","སློབ་མ་","ཨ་མ་","ཕ་"],correct:0},
-    {q:"ཀི་དེབ་ ཟེར་མི་འདི་ག་ཅི་སྨོ?",choices:["Pen ✏️","Chair 🪑","Book 📚","Bag 🎒"],correct:2},
-    {q:"ཟནིའི་ ཞེ་ས་ག་ཅི་སྨོ?་)?",choices:["ཟ་","མཆོད་","འཐུང་","བཞེས་"],correct:3},
-    {q:"ལགཔ་ means?",choices:["Foot 🦶","Hand ✋","Eye 👁️","Ear 👂"],correct:1},
+    {q:"Q1?",choices:["Fire 🔥","Water 💧","Tree 🌳","Sky ☁️"],correct:1},
+    {q:"Q2?",choices:["Water","Earth","Fire 🔥","Wind"],correct:2},
+    {q:"Which verb means 'to go'?",choices:["eat","go","stay","see"],correct:1},
+    {q:"Q4?",choices:["Sad 😢","Angry 😠","Happy 😊","Tired 😴"],correct:2},
+    {q:"'Teacher'?",choices:["A","B","C","D"],correct:0},
+    {q:"Q6?",choices:["Pen ✏️","Chair 🪑","Book 📚","Bag 🎒"],correct:2},
+    {q:"Q7?",choices:["a","b","c","d"],correct:3},
+    {q:"Q8 means?",choices:["Foot 🦶","Hand ✋","Eye 👁️","Ear 👂"],correct:1},
   ]
 };
 
-// ══════════════════════════════════════
-//  GAME STATE
-// ══════════════════════════════════════
+// GAME STATE
 let questions=[],topic="";
 let currentQ=0,ropePos=50,scores=[0,0],streaks=[0,0];
-let wrongCounts=[0,0];   // track wrong answers per team for stats
+let wrongCounts=[0,0];
 let answered=false;
 const BASE_PULL=13;
 let teamNames=['Team A','Team B'];
 
-// ── BUILD CROWD ──
 function buildCrowd(){
   const row=document.getElementById('crowd-row');
   row.innerHTML='';
@@ -135,7 +128,6 @@ function buildCrowd(){
   }
 }
 
-// ── LANDING ──
 function loadDemo(){ questions=DEMO.questions; topic=DEMO.topic; readTeamNames(); startGame(); }
 
 function readTeamNames(){
@@ -197,15 +189,12 @@ function parseCSV(text){
     if(r[1].toLowerCase().trim()==='question') continue;
     let cor;const raw=(r[6]||'').toString().toUpperCase().trim();
     if(['A','B','C','D'].includes(raw)) cor=['A','B','C','D'].indexOf(raw);
-    else{ cor=parseInt(raw); if(!isNaN(cor)&&cor>=1&&cor<=4) cor=cor-1; }
+    else cor=parseInt(raw);
     if(isNaN(cor)||cor<0||cor>3) cor=0;
     questions.push({q:r[1],choices:[r[2]||'',r[3]||'',r[4]||'',r[5]||''],correct:cor});
   }
 }
 
-// ══════════════════════════════════════
-//  GAME
-// ══════════════════════════════════════
 function startGame(){
   if(audioCtx&&audioCtx.state==='suspended') audioCtx.resume();
   getCtx();
@@ -215,7 +204,6 @@ function startGame(){
   document.getElementById('game').style.display='flex';
   document.getElementById('topic-pill').textContent=topic;
   document.getElementById('qtot').textContent=questions.length;
-  // Apply team names
   document.getElementById('header-a').textContent='🔵 '+teamNames[0];
   document.getElementById('header-b').textContent='🔴 '+teamNames[1];
   buildCrowd();
@@ -224,14 +212,12 @@ function startGame(){
   renderQ();
 }
 
-// ── QUESTION TRANSITION ──
 function renderQ(){
   if(currentQ>=questions.length){showWin('end');return;}
   answered=false;
   clearCharStates();
 
   const card=document.getElementById('q-card');
-  // Slide out old question
   card.classList.add('slide-out');
   setTimeout(()=>{
     const q=questions[currentQ];
@@ -256,7 +242,6 @@ function renderQ(){
       });
     });
 
-    // Slide in new question
     card.classList.remove('slide-out');
     card.classList.add('slide-in');
     setTimeout(()=>card.classList.remove('slide-in'),400);
@@ -270,7 +255,6 @@ function clearCharStates(){
   document.getElementById('crowd-row').classList.remove('cheering','cheering-b');
 }
 
-// ── POWER PULL ──
 function showPowerPull(){
   const b=document.getElementById('power-pull-banner');
   b.classList.add('show');
@@ -303,7 +287,6 @@ function pick(idx,team){
     });
     scores[team]++;streaks[team]++;streaks[1-team]=0;
 
-    // ── STREAK BONUS: 3 in a row = POWER PULL ──
     const isPower = streaks[team]>=3 && streaks[team]%3===0;
     const pullDist = isPower ? BASE_PULL*2 : BASE_PULL;
 
@@ -321,7 +304,6 @@ function pick(idx,team){
     clearCharStates();
     winnerEl.classList.add('pulling');
     loserEl.classList.add('wrong');
-    // Crowd cheers for winning side
     crowd.classList.add(team===0?'cheering':'cheering-b');
     setTimeout(()=>{ winnerEl.classList.remove('pulling');loserEl.classList.remove('wrong'); },1700);
 
@@ -362,9 +344,6 @@ function updateScores(){
   document.getElementById('streak-b').textContent=streaks[1]>=2?'🔥'.repeat(Math.min(streaks[1],5)):'';
 }
 
-// ══════════════════════════════════════
-//  WIN + STATS
-// ══════════════════════════════════════
 function showWin(team){
   stopBgMusic();playWinFanfare();
   clearCharStates();
@@ -389,8 +368,7 @@ function showWin(team){
     crowd.classList.add(winnerIdx===0?'cheering':'cheering-b');
   }
 
-  // Build stats
-  const totalQs=currentQ+(answered?0:0); // questions attempted
+  const totalQs=currentQ+(answered?0:0);
   const aCorrect=scores[0], bCorrect=scores[1];
   const aWrong=wrongCounts[0], bWrong=wrongCounts[1];
   const aAcc=aCorrect+aWrong>0?Math.round(aCorrect/(aCorrect+aWrong)*100):0;
