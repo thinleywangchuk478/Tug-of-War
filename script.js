@@ -96,14 +96,14 @@ function playWinFanfare(){
 const DEMO={
   topic:"Dzongkha Basics – Demo",
   questions:[
-    {q:"Q1?",choices:["Fire 🔥","Water 💧","Tree 🌳","Sky ☁️"],correct:1},
-    {q:"Q2?",choices:["Water","Earth","Fire 🔥","Wind"],correct:2},
-    {q:"Which verb means 'to go'?",choices:["eat","go","stay","see"],correct:1},
-    {q:"Q4?",choices:["Sad 😢","Angry 😠","Happy 😊","Tired 😴"],correct:2},
-    {q:"'Teacher'?",choices:["A","B","C","D"],correct:0},
-    {q:"Q6?",choices:["Pen ✏️","Chair 🪑","Book 📚","Bag 🎒"],correct:2},
+    {q:"ཆུ་ལུ་ཨིང་སྐད་ནང་ག་ཅི་སླབ་སྨོ?",choices:["Fire 🔥","Water 💧","Tree 🌳","Sky ☁️"],correct:1},
+    {q:"མེ་ལུ་ཨིང་སྐད་ནང་ག་ཅི་སླབ་སྨོ?",choices:["Water","Earth","Fire 🔥","Wind"],correct:2},
+    {q:"Which verb means 'to go'?",choices:["ཟ","འགྱོ།","སྡོད།","བལྟ།"],correct:1},
+    {q:"What does 'སེམས་དགའ་' mean?",choices:["Sad 😢","Angry 😠","Happy 😊","Tired 😴"],correct:2},
+    {q:"འདི་(📚) ག་ཅི་གི་པར་ཨིན་ན?",choices:["སྨྱུ་གུ།","འབྲི་ཁྲི།","ཀི་དེབ།","ལྷམ།"],correct:2},
+    {q:"Q6?",choices:["Pen ✏️","Chair 🪑","Book","Bag 🎒"],correct:2},
     {q:"Q7?",choices:["a","b","c","d"],correct:3},
-    {q:"Q8 means?",choices:["Foot 🦶","Hand ✋","Eye 👁️","Ear 👂"],correct:1},
+  
   ]
 };
 
@@ -330,7 +330,7 @@ function pick(idx,team){
 
 function updateRope(){
   document.getElementById('rope-flag').style.left=ropePos+'%';
-  const offset=ropePos-50, drag=offset*1.4;
+  const offset=ropePos-50, drag=offset*1.6;
   const teamA=document.getElementById('team-a-players');
   const teamB=document.getElementById('team-b-players');
   teamA.style.transform=`translateX(${drag}px)`;
