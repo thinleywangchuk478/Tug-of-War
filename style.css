@@ -2,24 +2,24 @@
    CUSTOM FONT
 ══════════════════════════════════════ */
 @font-face {
-  font-family: 'CustomFont';
-  src: url('fonts/CustomFont.ttf') format('truetype'),
-       url('fonts/CustomFont.woff2') format('woff2'),
-       url('fonts/CustomFont.woff')  format('woff');
+  font-family: 'ThinwangT_Joyig';
+  src: url('fonts/ThinwangT_Joyig.ttf') format('truetype'),
+       url('fonts/ThinwangT_Joyig.ttf') format('truetype'),
+       url('fonts/ThinwangT_Joyig.woff')  format('woff');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'CustomFont';
-  src: url('fonts/CustomFont-Bold.ttf') format('truetype'),
-       url('fonts/CustomFont-Bold.woff2') format('woff2');
+  font-family: 'ThinwangT_Joyig';
+  src: url('fonts/ThinwangT_Joyig.ttf') format('truetype'),
+       url('fonts/ThinwangT_Joyig-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
 
 /* ── NIGHT MODE (default) ── */
 :root {
-  --font: 'CustomFont', 'Jomolhari', 'Noto Serif Tibetan', 'Arial Unicode MS', sans-serif;
+  --font: 'ThinwangT_Joyig', 'Jomolhari', 'Noto Serif Tibetan', 'Arial Unicode MS', sans-serif;
   --gold:#F5A623; --orange:#E8611A; --blue:#3B8BEB; --red:#E74C3C;
   --green:#27AE60; --white:#fff; --muted:#7a9cc4;
 
@@ -424,3 +424,22 @@ body.day .stats-team-name.red { color:#c0392b; }
   height:1px;background:rgba(255,255,255,.1);margin:.2rem 0;
 }
 body.day .stats-divider{ background:rgba(0,0,0,.1); }
+
+.template-link{
+  display:block;
+  text-align:center;
+  margin-top:.8rem;
+  padding:.7rem;
+  border-radius:10px;
+  background:var(--gold);
+  color:#0f1f3d;
+  font-weight:bold;
+  font-family:var(--font);
+  text-decoration:none;
+  font-size:.88rem;
+  transition:transform .15s,opacity .15s;
+}
+.template-link:hover{
+  transform:translateY(-2px);
+  opacity:.92;
+}
