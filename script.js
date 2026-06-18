@@ -103,7 +103,6 @@ const DEMO={
     {q:"འདི་(📚) ག་ཅི་གི་པར་ཨིན་ན?",choices:["སྨྱུ་གུ།","འབྲི་ཁྲི།","ཀི་དེབ།","ལྷམ།"],correct:2},
     {q:"Q6?",choices:["Pen ✏️","Chair 🪑","Book","Bag 🎒"],correct:2},
     {q:"Q7?",choices:["a","b","c","d"],correct:3},
-  
   ]
 };
 
@@ -330,7 +329,7 @@ function pick(idx,team){
 
 function updateRope(){
   document.getElementById('rope-flag').style.left=ropePos+'%';
-  const offset=ropePos-50, drag=offset*1.6;
+  const offset=ropePos-50, drag=offset*1.4;
   const teamA=document.getElementById('team-a-players');
   const teamB=document.getElementById('team-b-players');
   teamA.style.transform=`translateX(${drag}px)`;
@@ -368,13 +367,10 @@ function showWin(team){
     crowd.classList.add(winnerIdx===0?'cheering':'cheering-b');
   }
 
-  const totalQs=currentQ+(answered?0:0);
   const aCorrect=scores[0], bCorrect=scores[1];
   const aWrong=wrongCounts[0], bWrong=wrongCounts[1];
   const aAcc=aCorrect+aWrong>0?Math.round(aCorrect/(aCorrect+aWrong)*100):0;
   const bAcc=bCorrect+bWrong>0?Math.round(bCorrect/(bCorrect+bWrong)*100):0;
-  const aStreak=streaks[0]>=3?'🔥 Power Pull!':'—';
-  const bStreak=streaks[1]>=3?'🔥 Power Pull!':'—';
 
   document.getElementById('stats-row-a').innerHTML=`
     <div class="stats-team-name blue">🔵 ${teamNames[0]}</div>
