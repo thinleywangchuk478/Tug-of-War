@@ -20,13 +20,13 @@
 <div id="landing">
   <div>
     <div class="brand-title">🏹 རྫོང་ཁ་ Tug of War</div>
-    <div class="brand-dz">སློབ་གྲྭའི་རྩེད་མོ། · Classroom Learning Game</div>
+    <div class="brand-dz">སློབ་ཁང་གི་རྩེད་མོ། · Classroom Learning Game</div>
   </div>
   <div class="land-card">
     <h2>🏷️ Team Names</h2>
     <div style="display:flex;gap:.6rem;">
-      <input type="text" id="name-a" placeholder="🔵 Team A name…" style="flex:1"/>
-      <input type="text" id="name-b" placeholder="🔴 Team B name…" style="flex:1"/>
+      <input type="text" id="name-a" placeholder="🔵 སྡེ་ཚན་ ཀ་་་" style="flex:1"/>
+      <input type="text" id="name-b" placeholder="🔴 སྡེ་ཚན་ ཁ་་་་" style="flex:1"/>
     </div>
   </div>
   <div class="land-card">
@@ -34,10 +34,10 @@
     <p>Publish your Google Sheet as CSV and paste the link below.</p>
     <input type="text" id="sheet-url" placeholder="Paste your Google Sheet published CSV URL…"/>
     <div class="err" id="url-err"></div>
-    <div class="load-msg" id="load-msg">⏳ Loading questions…</div>
+    <div class="load-msg" id="load-msg">⏳ དྲི་བ་གྲ་སྒྲིག་འབད་དོ་་་</div>
     <button class="btn btn-primary" onclick="loadSheet()">▶ Start with My Questions</button>
-    <div class="divider">— or try the demo —</div>
-    <button class="btn btn-gold" onclick="loadDemo()">🎮 Play Demo Now</button>
+    <div class="divider">— ཡང་ན་ དཔྱེ་སྟོན་བལྟ། —</div>
+    <button class="btn btn-gold" onclick="loadDemo()">🎮 དཔྱེ་སྟོན།/Play Demo Now</button>
   </div>
   <div class="steps">
     <h3>📋 Google Sheet setup</h3>
@@ -52,9 +52,9 @@
 <!-- ════ GAME ════ -->
 <div id="game">
   <div class="topbar">
-    <div class="topic-pill" id="topic-pill">Topic</div>
-    <div class="qcount">Question <span id="qnum">1</span> / <span id="qtot">8</span></div>
-    <button class="btn-sm" onclick="backHome()">← Home</button>
+    <div class="topic-pill" id="topic-pill">དོན་ཚན།/Topic</div>
+    <div class="qcount">དྲི་བ།/Question <span id="qnum">1</span> / <span id="qtot">8</span></div>
+    <button class="btn-sm" onclick="backHome()">← གདོང་ཤོག/Home</button>
   </div>
 
   <div class="arena" id="arena">
@@ -365,10 +365,10 @@
     </div>
     <div class="mid-col">
       <div class="q-card" id="q-card">
-        <div class="q-label">⚡ first correct tap wins the pull</div>
+        <div class="q-label">⚡ སྡེ་ཚན་ག་གིས་ ལན་ཧེ་མ་གདམ་ཁ་རྐྱབ་མི་འདི་ སྐུགས་འཐོབ།</div>
         <div class="q-text" id="q-text">Loading…</div>
       </div>
-      <div class="race-banner" id="race-banner">Both teams race to answer!</div>
+      <div class="race-banner" id="race-banner">སྡེ་ཚན་ གཉིས་ཆ་ར་ལུ་ གོ་སྐབས་འདྲན་འདྲ་ཡོད།!</div>
       <div class="feedback" id="feedback"></div>
     </div>
     <div class="team-col">
@@ -391,8 +391,8 @@
     <div class="stats-row" id="stats-row-b"></div>
   </div>
   <div class="win-btns">
-    <button class="btn btn-gold" onclick="restartGame()">🔄 Play Again</button>
-    <button class="btn btn-ghost" onclick="backHome()">🏠 Home</button>
+    <button class="btn btn-gold" onclick="restartGame()">🔄 ལོག་རྩེད།/Play Again</button>
+    <button class="btn btn-ghost" onclick="backHome()">🏠 གདོང་ཤོག/Home</button>
   </div>
 </div>
 
