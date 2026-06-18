@@ -20,45 +20,41 @@
 <div id="landing">
   <div>
     <div class="brand-title">🏹 རྫོང་ཁ་ Tug of War</div>
-    <div class="brand-dz">སློབ་ཁང་གི་རྩེད་མོ། · Classroom Learning Game</div>
+    <div class="brand-dz">སློབ་གྲྭའི་རྩེད་མོ། · Classroom Learning Game</div>
   </div>
   <div class="land-card">
-    <h2>🏷️ སྡེ་ཚན་གྱི་མིང་།</h2>
+    <h2>🏷️ Team Names</h2>
     <div style="display:flex;gap:.6rem;">
-      <input type="text" id="name-a" placeholder="🔵 སྡེ་ཚན་ ཀ་…" style="flex:1"/>
-      <input type="text" id="name-b" placeholder="🔴 སྡེ་ཚན་ ཁ…" style="flex:1"/>
+      <input type="text" id="name-a" placeholder="🔵 Team A name…" style="flex:1"/>
+      <input type="text" id="name-b" placeholder="🔴 Team B name…" style="flex:1"/>
     </div>
   </div>
   <div class="land-card">
     <h2>🎓 Teacher — Load Your Questions</h2>
-    <p>Publish your Google Sheet as CSV and paste the link below/paste your Google SHeet Link.</p>
+    <p>Publish your Google Sheet as CSV and paste the link below.</p>
     <input type="text" id="sheet-url" placeholder="Paste your Google Sheet published CSV URL…"/>
     <div class="err" id="url-err"></div>
-    <div class="load-msg" id="load-msg">⏳ འགོ་བཙུགས་དོ་་་</div>
-    <button class="btn btn-primary" onclick="loadSheet()">▶ རང་སོའི་དྲི་བ།/Start with My Questions</button>
-    <div class="divider">— ཡང་ན་ དཔྱེ་སྟོན་(Demo)དགོ་པ་ཅིན་་་ —</div>
-    <button class="btn btn-gold" onclick="loadDemo()">🎮 དཔྱེ་སྟོན།/ Demo</button>
+    <div class="load-msg" id="load-msg">⏳ Loading questions…</div>
+    <button class="btn btn-primary" onclick="loadSheet()">▶ Start with My Questions</button>
+    <div class="divider">— or try the demo —</div>
+    <button class="btn btn-gold" onclick="loadDemo()">🎮 Play Demo Now</button>
   </div>
   <div class="steps">
-  <h3>📋 Google Sheet setup</h3>
-  <ol>
-    <li>Fill in your topic name and questions in the sheet</li>
-    <li>File → Share → Publish to web → <strong>CSV</strong></li>
-    <li>Paste that URL above → Start!</li>
-  </ol>
-  <a href="https://docs.google.com/spreadsheets/d/1-8uF7BtyDUq6JDfxii9xRwJBnrDM29PfaBWR-uRiMjo/edit?usp=sharing" 
-     download 
-     class="template-link">
-     📥 དཔེ་གཞི་(Template)ཕབ་ལེན།/Download the Question Template
-  </a>
+    <h3>📋 Google Sheet setup</h3>
+    <ol>
+      <li>Fill in your topic name and questions in the sheet</li>
+      <li>File → Share → Publish to web → <strong>CSV</strong></li>
+      <li>Paste that URL above → Start!</li>
+    </ol>
+  </div>
 </div>
 
 <!-- ════ GAME ════ -->
 <div id="game">
   <div class="topbar">
-    <div class="topic-pill" id="topic-pill">དོན་ཚན།/Topic</div>
-    <div class="qcount">དྲི་བ།/Question <span id="qnum">1</span> / <span id="qtot">8</span></div>
-    <button class="btn-sm" onclick="backHome()">← གདོང་ཤོ/Home</button>
+    <div class="topic-pill" id="topic-pill">Topic</div>
+    <div class="qcount">Question <span id="qnum">1</span> / <span id="qtot">8</span></div>
+    <button class="btn-sm" onclick="backHome()">← Home</button>
   </div>
 
   <div class="arena" id="arena">
@@ -102,7 +98,6 @@
     </div>
     <div class="power-pull-banner" id="power-pull-banner">⚡ POWER PULL! ×2</div>
 
-    <!-- TEAM A — 2 players left -->
     <!-- TEAM A — 2 players left -->
     <div class="team-players left" id="team-a-players">
       <div class="player-wrap" id="pa1"><svg viewBox="0 0 100 160" class="player-svg" xmlns="http://www.w3.org/2000/svg">
@@ -231,7 +226,6 @@
 </svg></div>
     </div>
 
-    <!-- TEAM B — 2 players right -->
     <!-- TEAM B — 2 players right -->
     <div class="team-players right" id="team-b-players">
       <div class="player-wrap" id="pb1"><svg viewBox="0 0 100 160" class="player-svg" xmlns="http://www.w3.org/2000/svg">
