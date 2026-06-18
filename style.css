@@ -443,3 +443,21 @@ body.day .stats-divider{ background:rgba(0,0,0,.1); }
   transform:translateY(-2px);
   opacity:.92;
 }
+.template-link{
+  display:block;
+  text-align:center;
+  margin-top:.8rem;
+  padding:.7rem;
+  border-radius:10px;
+  background:var(--gold);
+  color:#0f1f3d;
+  font-weight:bold;
+  font-family:var(--font);
+  text-decoration:none;
+  font-size:.88rem;
+  transition:transform .15s,opacity .15s;
+}
+.template-link:hover{
+  transform:translateY(-2px);
+  opacity:.92;
+}
