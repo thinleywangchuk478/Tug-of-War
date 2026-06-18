@@ -260,7 +260,7 @@ body:not(.day) .ans-lbl.red{color:#ff8a7a;}
 .feedback.no{color:var(--red);}
 
 /* ── WIN OVERLAY ── */
-#win-overlay{display:none;position:fixed;inset:0;background:var(--win-overlay-bg);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:2rem;backdrop-filter:blur(8px);}
+#win-overlay{display:none;position:fixed;inset:0;background:rgba(220,236,252,0.45);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:2rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
 .win-big{font-size:5rem;}
 .win-title{font-size:2.8rem;font-weight:bold;color:var(--gold);}
 .win-sub{color:var(--muted-text);font-size:1rem;}
