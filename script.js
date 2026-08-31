@@ -135,6 +135,29 @@ function readTeamNames(){
   teamNames=[a||'Team A', b||'Team B'];
 }
 
+// Multiple CORS proxies, tried in order — if one is down or rate-limited, the next kicks in.
+const CORS_PROXIES=[
+  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
+  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+  u=>'https://thingproxy.freeboard.io/fetch/'+u,
+];
+
+async function fetchCSVWithFallback(csvUrl){
+  let lastErr=null;
+  for(const buildProxyUrl of CORS_PROXIES){
+    try{
+      const r=await fetch(buildProxyUrl(csvUrl));
+      if(!r.ok){lastErr='http';continue;}
+      const text=await r.text();
+      if(!text||text.trim().length<10){lastErr='empty';continue;}
+      const trimmed=text.trim();
+      if(trimmed.startsWith('<')){lastErr='html';continue;} // Google login/permission page, not CSV
+      return text; // success
+    }catch(e){ lastErr='network'; }
+  }
+  throw new Error(lastErr||'unknown');
+}
+
 async function loadSheet(){
   const url=document.getElementById('sheet-url').value.trim();
   const errEl=document.getElementById('url-err'),ldEl=document.getElementById('load-msg');
@@ -148,20 +171,27 @@ async function loadSheet(){
   else{
     const m=url.match(/\/d\/([\w-]+)/);
     if(!m){errEl.textContent='⚠️ Could not read Sheet ID';errEl.style.display='block';return;}
+    // capture a specific tab (gid) from either #gid=... or ?gid=...
+    const gidMatch=url.match(/[?#&]gid=(\d+)/);
     csvUrl=`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
+    if(gidMatch) csvUrl+=`&gid=${gidMatch[1]}`;
   }
   ldEl.style.display='block';
   try{
-    const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(csvUrl));
-    if(!r.ok) throw 0;
-    const text=await r.text();
-    if(!text||text.trim().length<10) throw 0;
+    const text=await fetchCSVWithFallback(csvUrl);
     parseCSV(text);
-    if(questions.length===0) throw 0;
+    if(questions.length===0) throw new Error('noquestions');
     readTeamNames(); startGame();
-  }catch{
+  }catch(e){
     ldEl.style.display='none';
-    errEl.textContent='⚠️ Could not load. Make sure the sheet is published as CSV.';errEl.style.display='block';
+    if(e.message==='html'){
+      errEl.textContent='⚠️ Google is asking for sign-in. Set sharing to "Anyone with the link — Viewer" and try again.';
+    }else if(e.message==='noquestions'){
+      errEl.textContent='⚠️ Sheet loaded but no valid questions were found. Check column format.';
+    }else{
+      errEl.textContent='⚠️ Could not load the sheet right now. Please check the link and your connection, then try again.';
+    }
+    errEl.style.display='block';
   }
 }
 
