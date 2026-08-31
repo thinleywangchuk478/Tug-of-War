@@ -135,68 +135,75 @@ function readTeamNames(){
   teamNames=[a||'Team A', b||'Team B'];
 }
 
-// Multiple CORS proxies, tried in order — if one is down or rate-limited, the next kicks in.
-// NOTE: corsproxy.io's free tier now only works from localhost or dev sandboxes
-// (CodePen/Replit/Glitch/etc) — it 403s on real hosted domains, so it's last resort only.
-const CORS_PROXIES=[
-  u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
-  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
-  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
-];
+// ─────────────────────────────────────────
+// GOOGLE SHEET LOADING
+// Accepts: normal "share link" URLs, view-only
+// links, links pointing at a specific tab
+// (#gid=...), AND already-published CSV links.
+// "Publish to web" is no longer required —
+// the sheet just needs to be shared as
+// "Anyone with the link can view".
+// ─────────────────────────────────────────
 
-async function fetchCSVWithFallback(csvUrl){
-  let lastErr=null;
-  for(const buildProxyUrl of CORS_PROXIES){
-    const proxied=buildProxyUrl(csvUrl);
-    try{
-      const r=await fetch(proxied);
-      if(!r.ok){lastErr='http';console.warn('[sheet-load] proxy returned',r.status,proxied);continue;}
-      const text=await r.text();
-      if(!text||text.trim().length<10){lastErr='empty';console.warn('[sheet-load] empty response from',proxied);continue;}
-      const trimmed=text.trim();
-      if(trimmed.startsWith('<')){lastErr='html';console.warn('[sheet-load] got HTML (permission/login page) from',proxied);continue;} // Google login/permission page, not CSV
-      console.info('[sheet-load] success via',proxied);
-      return text; // success
-    }catch(e){ lastErr='network'; console.warn('[sheet-load] network error on',proxied,e); }
-  }
-  throw new Error(lastErr||'unknown');
+function extractSheetInfo(url){
+  const idMatch=url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  const gidMatch=url.match(/[?#&]gid=(\d+)/);
+  return { id: idMatch?idMatch[1]:null, gid: gidMatch?gidMatch[1]:'0' };
+}
+
+async function tryFetchCSV(url){
+  try{
+    const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
+    if(!r.ok) return null;
+    const text=await r.text();
+    if(!text || text.trim().length<10) return null;
+    if(text.trim().startsWith('<')) return null; // got an HTML/login page, not CSV
+    return text;
+  }catch(e){ return null; }
 }
 
 async function loadSheet(){
   const url=document.getElementById('sheet-url').value.trim();
   const errEl=document.getElementById('url-err'),ldEl=document.getElementById('load-msg');
   errEl.style.display='none';
+
   if(!url.includes('docs.google.com/spreadsheets')){
     errEl.textContent='⚠️ Please paste a valid Google Sheets URL';errEl.style.display='block';return;
   }
-  let csvUrl='';
-  if(url.includes('/pub')&&url.includes('output=csv')) csvUrl=url;
-  else if(url.includes('/d/e/')) csvUrl=url.split('?')[0]+'?output=csv';
-  else{
-    const m=url.match(/\/d\/([\w-]+)/);
-    if(!m){errEl.textContent='⚠️ Could not read Sheet ID';errEl.style.display='block';return;}
-    // capture a specific tab (gid) from either #gid=... or ?gid=...
-    const gidMatch=url.match(/[?#&]gid=(\d+)/);
-    csvUrl=`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
-    if(gidMatch) csvUrl+=`&gid=${gidMatch[1]}`;
+
+  const {id,gid}=extractSheetInfo(url);
+  const candidates=[];
+
+  // If they pasted an already-published CSV link, try it first, as-is
+  if(url.includes('output=csv')||url.includes('format=csv')) candidates.push(url.split('#')[0]);
+
+  if(id){
+    candidates.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`);
+    candidates.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`);
+    if(gid!=='0') candidates.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv`);
   }
+
+  if(candidates.length===0){
+    errEl.textContent='⚠️ Could not read a Sheet ID from that link';errEl.style.display='block';return;
+  }
+
   ldEl.style.display='block';
-  try{
-    const text=await fetchCSVWithFallback(csvUrl);
-    parseCSV(text);
-    if(questions.length===0) throw new Error('noquestions');
-    readTeamNames(); startGame();
-  }catch(e){
-    ldEl.style.display='none';
-    if(e.message==='html'){
-      errEl.textContent='⚠️ Google is asking for sign-in. Set sharing to "Anyone with the link — Viewer" and try again.';
-    }else if(e.message==='noquestions'){
-      errEl.textContent='⚠️ Sheet loaded but no valid questions were found. Check column format.';
-    }else{
-      errEl.textContent='⚠️ Could not load the sheet right now. Please check the link and your connection, then try again.';
+
+  for(const csvUrl of candidates){
+    const text=await tryFetchCSV(csvUrl);
+    if(text){
+      parseCSV(text);
+      if(questions.length>0){
+        ldEl.style.display='none';
+        readTeamNames(); startGame();
+        return;
+      }
     }
-    errEl.style.display='block';
   }
+
+  ldEl.style.display='none';
+  errEl.textContent='⚠️ Could not load. Set sharing to "Anyone with the link – Viewer" on the sheet.';
+  errEl.style.display='block';
 }
 
 function parseCSVRow(row){
