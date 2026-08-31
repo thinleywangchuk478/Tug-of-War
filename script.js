@@ -136,24 +136,28 @@ function readTeamNames(){
 }
 
 // Multiple CORS proxies, tried in order — if one is down or rate-limited, the next kicks in.
+// NOTE: corsproxy.io's free tier now only works from localhost or dev sandboxes
+// (CodePen/Replit/Glitch/etc) — it 403s on real hosted domains, so it's last resort only.
 const CORS_PROXIES=[
-  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
+  u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
   u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
-  u=>'https://thingproxy.freeboard.io/fetch/'+u,
+  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
 ];
 
 async function fetchCSVWithFallback(csvUrl){
   let lastErr=null;
   for(const buildProxyUrl of CORS_PROXIES){
+    const proxied=buildProxyUrl(csvUrl);
     try{
-      const r=await fetch(buildProxyUrl(csvUrl));
-      if(!r.ok){lastErr='http';continue;}
+      const r=await fetch(proxied);
+      if(!r.ok){lastErr='http';console.warn('[sheet-load] proxy returned',r.status,proxied);continue;}
       const text=await r.text();
-      if(!text||text.trim().length<10){lastErr='empty';continue;}
+      if(!text||text.trim().length<10){lastErr='empty';console.warn('[sheet-load] empty response from',proxied);continue;}
       const trimmed=text.trim();
-      if(trimmed.startsWith('<')){lastErr='html';continue;} // Google login/permission page, not CSV
+      if(trimmed.startsWith('<')){lastErr='html';console.warn('[sheet-load] got HTML (permission/login page) from',proxied);continue;} // Google login/permission page, not CSV
+      console.info('[sheet-load] success via',proxied);
       return text; // success
-    }catch(e){ lastErr='network'; }
+    }catch(e){ lastErr='network'; console.warn('[sheet-load] network error on',proxied,e); }
   }
   throw new Error(lastErr||'unknown');
 }
