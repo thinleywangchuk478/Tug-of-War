@@ -185,19 +185,44 @@ async function loadSheet(){
   const errEl=document.getElementById('url-err'),ldEl=document.getElementById('load-msg');
   errEl.style.display='none';
 
-  if(!url.includes('docs.google.com/spreadsheets')){
-    errEl.textContent='⚠️ Please paste a valid Google Sheets URL';errEl.style.display='block';return;
+  // ── Path 1: Apps Script /exec endpoint — fetched directly, no proxy
+  // needed, since Apps Script web apps send CORS-friendly headers. This
+  // is the reliable path; recommend it when public proxies are down.
+  if(url.includes('script.google.com') && url.includes('/exec')){
+    ldEl.style.display='block';
+    try{
+      const r=await fetch(url);
+      if(r.ok){
+        const text=await r.text();
+        if(text && text.trim().length>=10 && !text.trim().startsWith('<')){
+          parseCSV(text);
+          if(questions.length>0){
+            ldEl.style.display='none';
+            readTeamNames(); startGame();
+            return;
+          }
+        }
+      }
+    }catch(e){ /* fall through to error below */ }
+    ldEl.style.display='none';
+    errEl.textContent='⚠️ Could not reach that Apps Script URL. Make sure it is deployed as a Web app with access set to "Anyone".';
+    errEl.style.display='block';
+    return;
   }
 
+  if(!url.includes('docs.google.com/spreadsheets')){
+    errEl.textContent='⚠️ Please paste a valid Google Sheets URL or Apps Script /exec URL';errEl.style.display='block';return;
+  }
+
+  // ── Path 2: normal Google Sheets link — routed through public CORS
+  // proxies. These can be unreliable (rate limits, outages, auth walls),
+  // so this is the fallback path, not the primary one.
   const {id,publishedId,gid}=extractSheetInfo(url);
   const candidates=[];
 
-  // If they pasted an already-published CSV link, try it first, as-is
   if(url.includes('output=csv')||url.includes('format=csv')) candidates.push(url.split('#')[0]);
 
   if(publishedId){
-    // "Publish to web" link (/d/e/PUBLISHED_ID/...) — only works if that
-    // specific tab was published as CSV. Try the CSV export forms of it.
     candidates.push(`https://docs.google.com/spreadsheets/d/e/${publishedId}/pub?output=csv&gid=${gid}&single=true`);
     candidates.push(`https://docs.google.com/spreadsheets/d/e/${publishedId}/pub?output=csv`);
   } else if(id){
@@ -226,9 +251,9 @@ async function loadSheet(){
 
   ldEl.style.display='none';
   if(publishedId){
-    errEl.textContent='⚠️ Could not load. In the sheet: File → Share → Publish to web → select the correct sheet/tab → CSV → Publish. Then paste the link it gives you.';
+    errEl.textContent='⚠️ Could not load via public proxies (they are currently unreliable). Use an Apps Script /exec URL instead — see the setup steps below.';
   } else {
-    errEl.textContent='⚠️ Could not load. Set sharing to "Anyone with the link – Viewer" on the sheet.';
+    errEl.textContent='⚠️ Could not load via public proxies (they are currently unreliable). Use an Apps Script /exec URL instead — see the setup steps below.';
   }
   errEl.style.display='block';
 }
