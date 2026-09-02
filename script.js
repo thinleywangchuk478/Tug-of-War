@@ -450,9 +450,19 @@ function updateRope(){
   teamB.style.transform=`scaleX(-1) translateX(${-drag}px)`;
 }
 
+function renderScoreIcons(count, icon){
+  const MAX_ICONS=12;
+  if(count<=0) return '<span class="score-empty">0</span>';
+  const shown=Math.min(count,MAX_ICONS);
+  let html='';
+  for(let i=0;i<shown;i++) html+=`<span class="score-icon">${icon}</span>`;
+  if(count>MAX_ICONS) html+=`<span class="score-empty">+${count-MAX_ICONS}</span>`;
+  return html;
+}
+
 function updateScores(){
-  document.getElementById('pts-a').textContent=scores[0];
-  document.getElementById('pts-b').textContent=scores[1];
+  document.getElementById('pts-a').innerHTML=renderScoreIcons(scores[0],'🎈');
+  document.getElementById('pts-b').innerHTML=renderScoreIcons(scores[1],'⭐');
   document.getElementById('streak-a').textContent=streaks[0]>=2?'🔥'.repeat(Math.min(streaks[0],5)):'';
   document.getElementById('streak-b').textContent=streaks[1]>=2?'🔥'.repeat(Math.min(streaks[1],5)):'';
 }
