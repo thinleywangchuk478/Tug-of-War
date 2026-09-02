@@ -146,20 +146,38 @@ function readTeamNames(){
 // ─────────────────────────────────────────
 
 function extractSheetInfo(url){
-  const idMatch=url.match(/\/d\/([a-zA-Z0-9-_]+)/);
   const gidMatch=url.match(/[?#&]gid=(\d+)/);
-  return { id: idMatch?idMatch[1]:null, gid: gidMatch?gidMatch[1]:'0' };
+  const gid=gidMatch?gidMatch[1]:'0';
+
+  // Published-to-web link: /d/e/PUBLISHED_ID/pubhtml or /pub
+  const pubMatch=url.match(/\/d\/e\/([a-zA-Z0-9-_]+)/);
+  if(pubMatch) return { id:null, publishedId:pubMatch[1], gid };
+
+  // Normal share link: /d/SHEET_ID/edit
+  const idMatch=url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return { id: idMatch?idMatch[1]:null, publishedId:null, gid };
 }
 
+// Multiple CORS proxies, tried in order — if one is down/rate-limited/
+// misconfigured, we fall through to the next rather than failing outright.
+const CORS_PROXIES=[
+  u => 'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+  u => 'https://corsproxy.io/?url='+encodeURIComponent(u),
+  u => 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
+];
+
 async function tryFetchCSV(url){
-  try{
-    const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
-    if(!r.ok) return null;
-    const text=await r.text();
-    if(!text || text.trim().length<10) return null;
-    if(text.trim().startsWith('<')) return null; // got an HTML/login page, not CSV
-    return text;
-  }catch(e){ return null; }
+  for(const buildProxyUrl of CORS_PROXIES){
+    try{
+      const r=await fetch(buildProxyUrl(url));
+      if(!r.ok) continue;
+      const text=await r.text();
+      if(!text || text.trim().length<10) continue;
+      if(text.trim().startsWith('<')) continue; // got an HTML/login page, not CSV
+      return text;
+    }catch(e){ /* try next proxy */ }
+  }
+  return null;
 }
 
 async function loadSheet(){
@@ -171,13 +189,18 @@ async function loadSheet(){
     errEl.textContent='⚠️ Please paste a valid Google Sheets URL';errEl.style.display='block';return;
   }
 
-  const {id,gid}=extractSheetInfo(url);
+  const {id,publishedId,gid}=extractSheetInfo(url);
   const candidates=[];
 
   // If they pasted an already-published CSV link, try it first, as-is
   if(url.includes('output=csv')||url.includes('format=csv')) candidates.push(url.split('#')[0]);
 
-  if(id){
+  if(publishedId){
+    // "Publish to web" link (/d/e/PUBLISHED_ID/...) — only works if that
+    // specific tab was published as CSV. Try the CSV export forms of it.
+    candidates.push(`https://docs.google.com/spreadsheets/d/e/${publishedId}/pub?output=csv&gid=${gid}&single=true`);
+    candidates.push(`https://docs.google.com/spreadsheets/d/e/${publishedId}/pub?output=csv`);
+  } else if(id){
     candidates.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`);
     candidates.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`);
     if(gid!=='0') candidates.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv`);
@@ -202,7 +225,11 @@ async function loadSheet(){
   }
 
   ldEl.style.display='none';
-  errEl.textContent='⚠️ Could not load. Set sharing to "Anyone with the link – Viewer" on the sheet.';
+  if(publishedId){
+    errEl.textContent='⚠️ Could not load. In the sheet: File → Share → Publish to web → select the correct sheet/tab → CSV → Publish. Then paste the link it gives you.';
+  } else {
+    errEl.textContent='⚠️ Could not load. Set sharing to "Anyone with the link – Viewer" on the sheet.';
+  }
   errEl.style.display='block';
 }
 
