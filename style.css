@@ -191,49 +191,68 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 .btn-sm{padding:.35rem .9rem;border-radius:8px;border:none;background:var(--btn-sm-bg);color:var(--body-color);font-family:var(--font);font-weight:bold;font-size:.82rem;cursor:pointer;}
 .btn-sm:hover{background:var(--btn-sm-hover);}
 
-/* ── TUG ARENA ── */
+/* ── TUG ARENA — compact, character-focused, sits inside mid-col ── */
 .arena{
   position:relative;
-  height:220px;
-  border-radius:18px;
-  background:var(--arena-bg);
-  border:1px solid var(--arena-border);
+  height:150px;
+  border-radius:16px;
+  background:var(--q-card-bg);
+  border:1px solid var(--q-card-border);
   overflow:hidden;
-  margin-bottom:.5rem;
+  margin:0 0 .1rem;
+  backdrop-filter:blur(6px);
 }
 .arena-ground{
   position:absolute;
-  bottom:28px;left:0;right:0;
-  height:4px;
+  bottom:10px;left:0;right:0;
+  height:3px;
   background:var(--ground-bg);
+  border-radius:2px;
 }
 .rope-svg{
   position:absolute;
-  bottom:80px;
+  bottom:52px;
   left:0; right:0;
   width:100%;
-  height:12px;
+  height:10px;
   z-index:5;
 }
 .rope-flag{
   position:absolute;
-  bottom:72px;
+  bottom:46px;
   transform:translateX(-50%);
   transition:left .7s cubic-bezier(.34,1.56,.64,1);
   z-index:20;
   display:flex;flex-direction:column;align-items:center;
 }
-.rope-pole{width:3px;height:30px;background:linear-gradient(#fff,#ccc);border-radius:2px;}
+.rope-pole{width:2.5px;height:22px;background:linear-gradient(#fff,#ccc);border-radius:2px;}
 .rope-cloth{
-  position:absolute;top:0;left:3px;
-  width:20px;height:14px;
+  position:absolute;top:0;left:2.5px;
+  width:15px;height:11px;
   clip-path:polygon(0 0,100% 20%,100% 80%,0 100%);
   background:var(--orange);
   border-radius:0 3px 3px 0;
 }
-.win-zone{position:absolute;top:0;bottom:0;width:80px;pointer-events:none;}
-.win-zone.l{left:0;background:linear-gradient(90deg,rgba(59,139,235,.3),transparent);border-radius:18px 0 0 18px;}
-.win-zone.r{right:0;background:linear-gradient(270deg,rgba(231,76,60,.3),transparent);border-radius:0 18px 18px 0;}
+.win-zone{position:absolute;top:0;bottom:0;width:40px;pointer-events:none;}
+.win-zone.l{left:0;background:linear-gradient(90deg,rgba(59,139,235,.25),transparent);border-radius:16px 0 0 16px;}
+.win-zone.r{right:0;background:linear-gradient(270deg,rgba(231,76,60,.25),transparent);border-radius:0 16px 16px 0;}
+.center-line{
+  position:absolute;
+  left:50%;top:6px;bottom:6px;
+  width:3px;
+  background:var(--gold);
+  border-radius:2px;
+  z-index:4;
+  transform:translateX(-50%);
+  opacity:.85;
+}
+
+/* scenic background layers removed per request — characters, rope, and
+   flag only. Elements are kept in the DOM (hidden) rather than deleted
+   so script.js's crowd/scene references keep working without changes. */
+.arena-sky, .arena-mountains, .cloud, .arena-grass, .crowd-row{
+  display:none !important;
+}
 
 /* ── 3-COLUMN LAYOUT ── */
 .game-cols{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:.9rem;align-items:start;flex:1;}
@@ -307,6 +326,11 @@ body.day .theme-toggle .knob{ transform:translateX(36px); }
 
 /* middle */
 .mid-col{display:flex;flex-direction:column;gap:.5rem;}
+.mid-divider{
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--divider-color), transparent);
+  margin:.15rem 0;
+}
 .q-card{background:var(--q-card-bg);border:1px solid var(--q-card-border);border-radius:16px;padding:1.2rem 1rem;backdrop-filter:blur(6px);}
 .q-label{font-size:.7rem;color:var(--muted-text);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
 .q-text{font-size:1.55rem;font-weight:bold;line-height:1.4;color:var(--q-text-color);}
